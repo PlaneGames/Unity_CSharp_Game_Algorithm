@@ -7,6 +7,12 @@ public class PopupShop : MonoBehaviour, IPopup
 {
     public Canvas canvas;
     public string name = "PopupShop!";
+    public int key;
+
+    public void SetKey(int _key)
+    {
+        key = _key;
+    }
 
     public void SetOrderLayer(int _order)
     {
@@ -16,5 +22,10 @@ public class PopupShop : MonoBehaviour, IPopup
     public void PrintName()
     {
         Debug.Log(name);
+    }
+
+    public void Close()
+    {
+        PopupMgr.RemovePopup<PopupShop>(key);
     }
 }
