@@ -11,7 +11,7 @@ public class PopupShop : MonoBehaviour, IPopup
     public void SetOrderLayer(int _order)
     {
         canvas.sortingOrder = _order;
-    }
+    } 
 
     public void PrintName()
     {

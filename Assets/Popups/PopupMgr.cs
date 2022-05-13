@@ -17,10 +17,10 @@ public struct PopupInfo
 {
     public string address;
     public bool overlapping_able;
-}
+} 
 
 public struct PopupResult
-{
+{ 
     public GameObject obj;
     public IPopup comp;
 }
