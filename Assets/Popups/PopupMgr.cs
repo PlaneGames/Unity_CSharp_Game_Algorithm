@@ -10,37 +10,48 @@ using UnityEngine.AddressableAssets;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.13
+Version : 22.05.16
 */
 
 public struct PopupInfo
-{
-    public string address;
-    public bool overlapping_able;
+{  
+    public string address;  
+    public bool overlapping_able; 
 } 
 
 public struct PopupResult
-{ 
+{
     public GameObject obj;
     public IPopup comp;
 }
 
-/// <summary> Interface of Every Popups. </summary>
-public interface IPopup 
+public struct PopupLinkInfo
 {
-    public GameObject gameObject { get ; } 
+    public IPopup popup;
+    public bool remove_together;
+}
+
+/// <summary> Interface of Every Popups. </summary>
+public interface IPopup
+{
+    public GameObject gameObject { get; }
+
+    public List<PopupLinkInfo> linked_popups { get; set; }
 
     public void SetKey(int _key);
 
     public void SetOrderLayer(int _order);
 
+    public void SetToLink(IPopup _popup, bool _remove_together);
+
     public void PrintName();
+
+    public void Close();
 }
 
 /// <summary> The Popup Manager. </summary>
 public class PopupMgr : MonoBehaviour
 {
-
     public static Transform canvas_trans;
 
     public static Dictionary<Type, PopupInfo> popup_pref_address_list;
@@ -53,21 +64,23 @@ public class PopupMgr : MonoBehaviour
     private void Start()
     {
         Init();
-        PopupInit<PopupShop>();
 
-        GetPopup<PopupShop>(( PopupResult Result ) => 
-        { 
-            Result.comp.PrintName();
-        });
+        PopupInit<PopupShop>();
+        PopupInit<PopupCover>();
+
+        GetPopup<PopupCover>(false);
     }
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            GetPopup<PopupShop>(( PopupResult Result ) => 
-            { 
-                Result.comp.PrintName();
+            GetPopup<PopupCover>( ( PopupResult cover ) => 
+            {
+                GetPopup<PopupShop>( ( PopupResult Result ) => 
+                {
+                    Result.comp.SetToLink(cover.comp, true);
+                });
             });
         }   
     }
@@ -76,7 +89,7 @@ public class PopupMgr : MonoBehaviour
     {
         last_popup_order = 0;
         last_key = 0;
-        
+
         popup_pref_address_list = null;
         popup_pref_address_list = new Dictionary<Type, PopupInfo>();
 
@@ -88,9 +101,9 @@ public class PopupMgr : MonoBehaviour
 
     public static void PopupInit<T>()
     {
-        PopupInit<T>(false);
+        PopupInit<T>(false); 
     }
- 
+
     public static void PopupInit<T>(bool _overlapping_able)
     {
         PopupInfo _info;
@@ -101,6 +114,16 @@ public class PopupMgr : MonoBehaviour
             popup_pref_address_list.Add(typeof(T), _info);
         else
             Debug.LogError(_info.address + " 팝업 Init가 중복 실행되었습니다.");
+    }
+
+    public static void GetPopup<T>() where T : IPopup
+    {
+        GetPopup<T>( ( PopupResult Result ) => {} );
+    }
+
+    public static void GetPopup<T>(bool _active_able) where T : IPopup
+    {
+        GetPopup<T>( ( PopupResult Result ) => { Result.obj.SetActive(_active_able); } );
     }
 
     public static void GetPopup<T>(Action<PopupResult> Result) where T : IPopup
@@ -116,14 +139,8 @@ public class PopupMgr : MonoBehaviour
                 GameObject _obj = handle.Result;
                 _info.obj = _obj;
                 _info.comp = _obj.GetComponent<T>();
-
                 active_popup_list.Add(_type, _info.comp);
-
-                _info.comp.SetKey(last_key);
-                last_key ++;
-                last_popup_order += gap_between_order;
-                _info.comp.SetOrderLayer(last_popup_order);
-
+                PopupOrderInit(_info.comp);
                 _obj = null;
                 Result(_info);
             };
@@ -132,41 +149,28 @@ public class PopupMgr : MonoBehaviour
         {
             var _popup = active_popup_list[_type];
             _popup.gameObject.SetActive(true);
-            _popup.SetKey(last_key);
-            last_key ++;
-            last_popup_order += gap_between_order;
-            _popup.SetOrderLayer(last_popup_order);
+            PopupOrderInit(_popup);
+            _info.obj = _popup.gameObject;
+            _info.comp = _popup;
+            Result(_info);
         }
     }
 
-    /*
-    private static void AddPopupToList<T>(int _key, IPopup _comp)
+    private static void PopupOrderInit(IPopup _comp)
     {
-        var _type = typeof(T);
-        if (!active_popup_list.ContainsKey(_type))
-        {
-            var _info = new Dictionary<int, IPopup>();
-            _info.Add(_key, _comp);
-            active_popup_list.Add(_type, _info);
-        }
-        else
-        {
-            active_popup_list[_type][_key].gameObject.SetActive(true);
-        }
-        _comp.SetKey(last_key);
         last_key ++;
         last_popup_order += gap_between_order;
+
+        _comp.SetKey(last_key);
         _comp.SetOrderLayer(last_popup_order);
     }
-    */
 
     public static void RemovePopup<T>(int _key)
     {
         var _type = typeof(T);
         active_popup_list[_type].gameObject.SetActive(false);
-        //active_popup_list.Remove(_type);
         last_key --;
         last_popup_order -= gap_between_order;
-    }   
+    }
 
 }

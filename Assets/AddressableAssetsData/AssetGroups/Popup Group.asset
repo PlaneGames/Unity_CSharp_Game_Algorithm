@@ -21,6 +21,10 @@ MonoBehaviour:
     m_Address: PopupShop
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 85562497fd0c4c84a8ca21d436b28313
+    m_Address: PopupCover
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bc4e2c821e9b5c04997bf54e3d40930b, type: 2}
   m_SchemaSet:
