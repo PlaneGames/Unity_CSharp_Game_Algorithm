@@ -10,7 +10,7 @@ using UnityEngine.AddressableAssets;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.16
+Version : 22.05.17
 */
 
 public struct PopupInfo
@@ -22,32 +22,15 @@ public struct PopupInfo
 public struct PopupResult
 {
     public GameObject obj;
-    public IPopup comp;
+    public Popup comp;
 }
 
 public struct PopupLinkInfo
 {
-    public IPopup popup;
+    public Popup popup;
     public bool remove_together;
 }
 
-/// <summary> Interface of Every Popups. </summary>
-public interface IPopup
-{
-    public GameObject gameObject { get; }
-
-    public List<PopupLinkInfo> linked_popups { get; set; }
-
-    public void SetKey(int _key);
-
-    public void SetOrderLayer(int _order);
-
-    public void SetToLink(IPopup _popup, bool _remove_together);
-
-    public void PrintName();
-
-    public void Close();
-}
 
 /// <summary> The Popup Manager. </summary>
 public class PopupMgr : MonoBehaviour
@@ -55,11 +38,12 @@ public class PopupMgr : MonoBehaviour
     public static Transform canvas_trans;
 
     public static Dictionary<Type, PopupInfo> popup_pref_address_list;
-    public static Dictionary<Type, IPopup> active_popup_list;
+    public static Dictionary<Type, Popup> active_popup_list;
 
     public static int last_popup_order;
     public static int gap_between_order = 10;
     public static int last_key;
+
 
     private void Start()
     {
@@ -94,7 +78,7 @@ public class PopupMgr : MonoBehaviour
         popup_pref_address_list = new Dictionary<Type, PopupInfo>();
 
         active_popup_list = null;
-        active_popup_list = new Dictionary<Type, IPopup>();
+        active_popup_list = new Dictionary<Type, Popup>();
 
         canvas_trans = GameObject.Find("Canvas").transform;
     }
@@ -116,17 +100,17 @@ public class PopupMgr : MonoBehaviour
             Debug.LogError(_info.address + " 팝업 Init가 중복 실행되었습니다.");
     }
 
-    public static void GetPopup<T>() where T : IPopup
+    public static void GetPopup<T>() where T : Popup
     {
         GetPopup<T>( ( PopupResult Result ) => {} );
     }
 
-    public static void GetPopup<T>(bool _active_able) where T : IPopup
+    public static void GetPopup<T>(bool _active_able) where T : Popup
     {
         GetPopup<T>( ( PopupResult Result ) => { Result.obj.SetActive(_active_able); } );
     }
 
-    public static void GetPopup<T>(Action<PopupResult> Result) where T : IPopup
+    public static void GetPopup<T>(Action<PopupResult> Result) where T : Popup
     {
         PopupResult _info;
         var _type = typeof(T);
@@ -156,18 +140,17 @@ public class PopupMgr : MonoBehaviour
         }
     }
 
-    private static void PopupOrderInit(IPopup _comp)
+    private static void PopupOrderInit(Popup _comp)
     {
         last_key ++;
         last_popup_order += gap_between_order;
-
         _comp.SetKey(last_key);
         _comp.SetOrderLayer(last_popup_order);
     }
 
-    public static void RemovePopup<T>(int _key)
+    public static void RemovePopup(Type _type)
     {
-        var _type = typeof(T);
+        active_popup_list[_type].OnClosed();
         active_popup_list[_type].gameObject.SetActive(false);
         last_key --;
         last_popup_order -= gap_between_order;
