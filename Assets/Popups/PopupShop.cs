@@ -6,8 +6,11 @@ using UnityEngine;
 
 public class PopupShop : Popup
 {
+
     public override void OnClosed()
     {
         Debug.Log(this);
+        CloseComplete();
     }
+
 }

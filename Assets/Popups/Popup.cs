@@ -12,6 +12,7 @@ public abstract class Popup : MonoBehaviour
     public int key = 0;
     public List<PopupLinkInfo> linked_popups { get; set; }
 
+
     public void SetKey(int _key)
     {
         key = _key;
@@ -49,7 +50,11 @@ public abstract class Popup : MonoBehaviour
             linked_popups.Clear();
             linked_popups = null;
         }
-        
+
+    }
+
+    protected void CloseComplete()
+    {
         PopupMgr.RemovePopup(this.GetType());
     }
 
