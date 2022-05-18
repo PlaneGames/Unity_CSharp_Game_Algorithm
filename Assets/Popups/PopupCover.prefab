@@ -126,5 +126,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: -3342821651376366885}
-  name: PopupCover!
   key: 0
+  rect: {fileID: 4257976476350887141}
+  image: {fileID: 4257976476350887146}
+  open_ani_type: 1
+  close_ani_type: 3

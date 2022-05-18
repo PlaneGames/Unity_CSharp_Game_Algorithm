@@ -35,7 +35,6 @@ public struct PopupLinkInfo
 /// <summary> The Popup Manager. </summary>
 public class PopupMgr : MonoBehaviour
 {
-    public static Transform canvas_trans;
 
     public static Dictionary<Type, PopupInfo> popup_pref_address_list;
     public static Dictionary<Type, Popup> active_popup_list;
@@ -44,6 +43,8 @@ public class PopupMgr : MonoBehaviour
     public static int gap_between_order = 10;
     public static int last_key;
 
+    public static bool popup_is_opening;
+
 
     private void Start()
     {
@@ -51,13 +52,11 @@ public class PopupMgr : MonoBehaviour
 
         PopupInit<PopupShop>();
         PopupInit<PopupCover>();
-
-        GetPopup<PopupCover>(false);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
         {
             GetPopup<PopupCover>( ( PopupResult cover ) => 
             {
@@ -79,8 +78,6 @@ public class PopupMgr : MonoBehaviour
 
         active_popup_list = null;
         active_popup_list = new Dictionary<Type, Popup>();
-
-        canvas_trans = GameObject.Find("Canvas").transform;
     }
 
     public static void PopupInit<T>()
@@ -112,31 +109,39 @@ public class PopupMgr : MonoBehaviour
 
     public static void GetPopup<T>(Action<PopupResult> Result) where T : Popup
     {
-        PopupResult _info;
-        var _type = typeof(T);
-        string _pref = popup_pref_address_list[_type].address;
+        if (!popup_is_opening)
+        {
+            popup_is_opening = true;
+            PopupResult _info;
+            var _type = typeof(T);
+            string _pref = popup_pref_address_list[_type].address;
 
-        if (!active_popup_list.ContainsKey(_type))
-        {
-            Addressables.InstantiateAsync(_pref, canvas_trans).Completed += (handle) =>
+            if (!active_popup_list.ContainsKey(_type))
             {
-                GameObject _obj = handle.Result;
-                _info.obj = _obj;
-                _info.comp = _obj.GetComponent<T>();
-                active_popup_list.Add(_type, _info.comp);
-                PopupOrderInit(_info.comp);
-                _obj = null;
+                Addressables.InstantiateAsync(_pref, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans).Completed += (handle) =>
+                {
+                    GameObject _obj = handle.Result;
+                    _info.obj = _obj;
+                    _info.comp = _obj.GetComponent<T>();
+                    active_popup_list.Add(_type, _info.comp);
+                    PopupOrderInit(_info.comp);
+                    _info.comp.Open();
+                    _obj = null;
+                    popup_is_opening = false;
+                    Result(_info);
+                };
+            }
+            else
+            {
+                var _popup = active_popup_list[_type];
+                _popup.gameObject.SetActive(true);
+                PopupOrderInit(_popup);
+                _info.obj = _popup.gameObject;
+                _info.comp = _popup;
+                _popup.Open();
+                popup_is_opening = false;
                 Result(_info);
-            };
-        }
-        else
-        {
-            var _popup = active_popup_list[_type];
-            _popup.gameObject.SetActive(true);
-            PopupOrderInit(_popup);
-            _info.obj = _popup.gameObject;
-            _info.comp = _popup;
-            Result(_info);
+            }
         }
     }
 
