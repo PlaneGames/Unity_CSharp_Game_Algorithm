@@ -10,17 +10,17 @@ using UnityEngine.AddressableAssets;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.17
+Version : 22.05.19
 */
 
 public struct PopupInfo
-{  
+{ 
     public string address;  
-    public bool overlapping_able; 
+    public bool overlapping_able;
 } 
 
 public struct PopupResult
-{
+{ 
     public GameObject obj;
     public Popup comp;
 }
@@ -37,12 +37,16 @@ public class PopupMgr : MonoBehaviour
 {
 
     public static Dictionary<Type, PopupInfo> popup_pref_address_list;
+
+    public static Dictionary<Type, Popup> pool_popup_list;
     public static Dictionary<Type, Popup> active_popup_list;
+
+    public static Dictionary<int, Popup> active_popup_order_list;
 
     public static int last_popup_order;
     public static int gap_between_order = 10;
     public static int last_key;
-
+    
     public static bool popup_is_opening;
 
 
@@ -50,24 +54,23 @@ public class PopupMgr : MonoBehaviour
     {
         Init();
 
+        PopupInit<PopupCover>(true);
         PopupInit<PopupShop>();
-        PopupInit<PopupCover>();
+        PopupInit<PopupException>();   
     }
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Q))
         {
-            GetPopup<PopupCover>( ( PopupResult cover ) => 
-            {
-                GetPopup<PopupShop>( ( PopupResult Result ) => 
-                {
-                    Result.comp.SetToLink(cover.comp, true);
-                });
-            });
-        }   
+            GetPopup<PopupShop>();
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            GetPopup<PopupException>();
+        }
     }
-
+    
     private void Init()
     {
         last_popup_order = 0;
@@ -76,15 +79,20 @@ public class PopupMgr : MonoBehaviour
         popup_pref_address_list = null;
         popup_pref_address_list = new Dictionary<Type, PopupInfo>();
 
+        pool_popup_list = null;
+        pool_popup_list = new Dictionary<Type, Popup>();
+
         active_popup_list = null;
         active_popup_list = new Dictionary<Type, Popup>();
     }
 
+    /// <summary> Initialize The Popup. <br/>Create The GameObject In The Current Scene. </summary>
     public static void PopupInit<T>()
     {
-        PopupInit<T>(false); 
+        PopupInit<T>(false);
     }
 
+    /// <summary> Initialize The Popup. <br/>Create The GameObject In The Current Scene. </summary>
     public static void PopupInit<T>(bool _overlapping_able)
     {
         PopupInfo _info;
@@ -94,7 +102,7 @@ public class PopupMgr : MonoBehaviour
         if (!popup_pref_address_list.ContainsKey(typeof(T)))
             popup_pref_address_list.Add(typeof(T), _info);
         else
-            Debug.LogError(_info.address + " 팝업 Init가 중복 실행되었습니다.");
+            Debug.LogError(_info.address + " 팝업이 중복으로 초기화되었습니다.");
     }
 
     public static void GetPopup<T>() where T : Popup
@@ -102,53 +110,87 @@ public class PopupMgr : MonoBehaviour
         GetPopup<T>( ( PopupResult Result ) => {} );
     }
 
-    public static void GetPopup<T>(bool _active_able) where T : Popup
-    {
-        GetPopup<T>( ( PopupResult Result ) => { Result.obj.SetActive(_active_able); } );
-    }
-
     public static void GetPopup<T>(Action<PopupResult> Result) where T : Popup
     {
-        if (!popup_is_opening)
-        {
-            popup_is_opening = true;
-            PopupResult _info;
-            var _type = typeof(T);
-            string _pref = popup_pref_address_list[_type].address;
+        var _type = typeof(T);
+        var _over_able = popup_pref_address_list[_type].overlapping_able;
 
+        if (!_over_able)
+        {
+            if (popup_is_opening)
+                return;
+    
+            popup_is_opening = true;
+        }
+
+        PopupResult _info;
+        
+        string _pref = popup_pref_address_list[_type].address;
+
+        if (pool_popup_list.ContainsKey(_type))
+        {
             if (!active_popup_list.ContainsKey(_type))
             {
-                Addressables.InstantiateAsync(_pref, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans).Completed += (handle) =>
+                var _popup = pool_popup_list[_type];
+                _info.obj = _popup.gameObject;
+                _info.comp = _popup;
+                _popup.CheckLinking(() => 
                 {
-                    GameObject _obj = handle.Result;
-                    _info.obj = _obj;
-                    _info.comp = _obj.GetComponent<T>();
-                    active_popup_list.Add(_type, _info.comp);
-                    PopupOrderInit(_info.comp);
-                    _info.comp.Open();
-                    _obj = null;
+                    PopupSetActive(_type, _info, false);
                     popup_is_opening = false;
                     Result(_info);
-                };
+                });
             }
             else
             {
-                var _popup = active_popup_list[_type];
-                _popup.gameObject.SetActive(true);
-                PopupOrderInit(_popup);
-                _info.obj = _popup.gameObject;
-                _info.comp = _popup;
-                _popup.Open();
-                popup_is_opening = false;
-                Result(_info);
+                if (!_over_able)
+                    popup_is_opening = false;
+                else
+                {
+                    var _popup = pool_popup_list[_type];
+                    _info.obj = _popup.gameObject;
+                    _info.comp = _popup;
+                    _popup.CheckLinking(() => 
+                    {
+                        PopupSetActive(_type, _info, true);
+                        popup_is_opening = false;
+                        Result(_info);
+                    });
+                }
             }
         }
+        else
+        {
+            Addressables.InstantiateAsync(_pref, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans).Completed += (handle) =>
+            {
+                GameObject _obj = handle.Result;
+                _info.obj = _obj;
+                _info.comp = _obj.GetComponent<T>();
+                pool_popup_list.Add(_type, _info.comp);
+                _info.obj.SetActive(false);
+                _info.comp.CheckLinking(() => 
+                {
+                    PopupSetActive(_type, _info, false);
+                    popup_is_opening = false;
+                    Result(_info);
+                });
+            };
+        }
+    }
+
+    private static void PopupSetActive(Type _type, PopupResult _info, bool _over_able)
+    {
+        if (!_over_able)
+            active_popup_list.Add(_type, _info.comp);
+        active_popup_list[_type].gameObject.SetActive(true);
+        PopupOrderInit(active_popup_list[_type]);
+        active_popup_list[_type].Open();
     }
 
     private static void PopupOrderInit(Popup _comp)
     {
         last_key ++;
-        last_popup_order += gap_between_order;
+        last_popup_order = active_popup_list.Count * gap_between_order;
         _comp.SetKey(last_key);
         _comp.SetOrderLayer(last_popup_order);
     }
@@ -157,6 +199,7 @@ public class PopupMgr : MonoBehaviour
     {
         active_popup_list[_type].OnClosed();
         active_popup_list[_type].gameObject.SetActive(false);
+        active_popup_list.Remove(_type);
         last_key --;
         last_popup_order -= gap_between_order;
     }

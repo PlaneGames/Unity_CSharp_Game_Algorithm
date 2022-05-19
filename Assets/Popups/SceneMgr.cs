@@ -11,7 +11,7 @@ using UnityEngine.AddressableAssets;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.18
+Version : 22.05.19
 */
 
 public enum CANVAS_TYPE

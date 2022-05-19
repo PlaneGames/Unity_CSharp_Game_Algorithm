@@ -8,8 +8,8 @@ Developer : Jae Young Kwon
 Version : 22.05.19
 */
 
-public class PopupCover : Popup
-{
+public class PopupException : Popup
+{ 
 
     public override void OnOpened()
     {

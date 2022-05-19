@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.4292453, g: 0.8645278, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -334,11 +334,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 6147996632523172250}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02bc2dfcf0272e441859c4392482a5b5, type: 3}
+  m_Script: {fileID: 11500000, guid: 804c4f4d79c314a4b81c0b5de941f7da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 4418062016506007834}
   key: 0
+  rect: {fileID: 6056813037503526703}
+  image: {fileID: 0}
+  open_ani_type: 0
+  close_ani_type: 2
 --- !u!223 &4418062016506007834
 Canvas:
   m_ObjectHideFlags: 0
