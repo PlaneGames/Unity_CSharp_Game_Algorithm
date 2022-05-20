@@ -38,10 +38,12 @@
   <ItemGroup>
      <Compile Include="Assets\Popups\SceneMgr.cs" />
      <Compile Include="Assets\Popups\PopupMgr.cs" />
-     <Compile Include="Assets\Popups\PopupCover.cs" />
+     <Compile Include="Assets\Popups\PopupException.cs" />
+     <Compile Include="Assets\Popups\PopupElementCover.cs" />
      <Compile Include="Assets\Popups\PopupShop.cs" />
      <Compile Include="Assets\Popups\Popup.cs" />
-     <Compile Include="Assets\Popups\PopupException.cs" />
+     <Compile Include="Assets\Popups\PopupElementMgr.cs" />
+     <Compile Include="Assets\Popups\PopupElement.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.21f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>

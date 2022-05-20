@@ -5,7 +5,7 @@ using UnityEngine;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.19
+Version : 22.05.20
 */
 
 public class PopupShop : Popup

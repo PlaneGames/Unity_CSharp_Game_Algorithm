@@ -20,12 +20,18 @@ public enum POPUP_ANI
     CLOSE_FADEOUT,
 }
 
+public struct LinkToPEInfo
+{
+    public PopupElement PE;
+    public bool remove_together;
+}
+
 /// <summary> Parent of Every Popups. </summary>
 public abstract class Popup : MonoBehaviour
 {
     public Canvas canvas;
     public int key = 0;
-    public List<PopupLinkInfo> linked_popups { get; set; }
+    public List<PopupElement> linked_PEs { get; set; }
 
     public RectTransform rect;
     public Image image;
@@ -35,7 +41,40 @@ public abstract class Popup : MonoBehaviour
     private Sequence seq;
     private bool is_closing;
 
-    public Stack<int> order_histroy;
+    public void SetElements(Action Result)
+    {
+        IEnumerator _push_PEs()
+        {
+            Debug.Log("SetElements Start.");
+            List<int> _un_pushed_list = new List<int>();
+            _un_pushed_list.Add(0);
+
+            PopupElementMgr.GetPE<PopupElementCover>(this, ( Result ) => {
+                Debug.Log("pushed !"); 
+                linked_PEs.Add(Result.comp);
+                _un_pushed_list.Remove(0);
+            });
+
+            while (true)
+            {
+                if (_un_pushed_list.Count == 0)
+                {
+                    _un_pushed_list.Clear();
+                    _un_pushed_list = null;
+                    break;
+                }
+                yield return null;
+            }
+
+            Result();
+        }
+
+        if (linked_PEs == null)
+        {
+            linked_PEs = new List<PopupElement>();
+        }
+        StartCoroutine(_push_PEs());
+    }
 
     public void SetKey(int _key)
     {
@@ -45,23 +84,6 @@ public abstract class Popup : MonoBehaviour
     public void SetOrderLayer(int _order)
     {
         canvas.sortingOrder = _order;
-        if (order_histroy == null)
-        {
-            order_histroy = new Stack<int>();
-        }
-        order_histroy.Push(_order);
-    }
-
-    public void SetToLink(Popup _popup, bool _remove_together)
-    {
-        if (linked_popups == null)
-        {
-            linked_popups = new List<PopupLinkInfo>();
-        }
-        PopupLinkInfo _info;
-        _info.popup = _popup;
-        _info.remove_together = _remove_together;
-        linked_popups.Add(_info);
     }
 
     public void Open()
@@ -75,57 +97,27 @@ public abstract class Popup : MonoBehaviour
         if (is_closing)
             return;
 
-        if (order_histroy != null)
-        {
-            order_histroy.Pop();
+        CloseElements();
+        is_closing = true;
+        SetAni(close_ani_type);
+    }
 
-            if (order_histroy.Count > 0)
-            {
-                canvas.sortingOrder = order_histroy.Peek();
-                return;
-            }
-            else
-            {
-                is_closing = true;
-            }
-        }
-
-        if (linked_popups != null)
+    private void CloseElements()
+    {
+        if (linked_PEs != null)
         {
             int i;
-            for (i = 0; i < linked_popups.Count; i ++)
+            for (i = 0; i < linked_PEs.Count; i ++)
             {
-                if (linked_popups[i].remove_together)
-                {
-                    linked_popups[i].popup.Close();
-                }
+                linked_PEs[i].OnClosed();
             }
-            linked_popups.Clear();
-            linked_popups = null;
+            linked_PEs.Clear();
         }
-        SetAni(close_ani_type);
     }
 
     public abstract void OnOpened();
 
     public abstract void OnClosed();
-
-    public void CheckLinking(Action _result)
-    {
-        if (this.GetType() != typeof(PopupCover))
-        {
-            PopupMgr.GetPopup<PopupCover>( ( PopupResult Result ) => 
-            {
-                Debug.Log("CheckLinking");
-                SetToLink(Result.comp, true);
-                _result();
-            });
-        }
-        else
-        {
-            _result();
-        }
-    }
 
     public void SetAni(POPUP_ANI _type)
     {

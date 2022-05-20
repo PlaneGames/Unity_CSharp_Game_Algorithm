@@ -10,7 +10,7 @@ using UnityEngine.AddressableAssets;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.19
+Version : 22.05.20
 */
 
 public struct PopupInfo
@@ -23,12 +23,6 @@ public struct PopupResult
 { 
     public GameObject obj;
     public Popup comp;
-}
-
-public struct PopupLinkInfo
-{
-    public Popup popup;
-    public bool remove_together;
 }
 
 
@@ -54,7 +48,6 @@ public class PopupMgr : MonoBehaviour
     {
         Init();
 
-        PopupInit<PopupCover>(true);
         PopupInit<PopupShop>();
         PopupInit<PopupException>();   
     }
@@ -82,7 +75,7 @@ public class PopupMgr : MonoBehaviour
         pool_popup_list = null;
         pool_popup_list = new Dictionary<Type, Popup>();
 
-        active_popup_list = null;
+        active_popup_list = null; 
         active_popup_list = new Dictionary<Type, Popup>();
     }
 
@@ -134,8 +127,8 @@ public class PopupMgr : MonoBehaviour
                 var _popup = pool_popup_list[_type];
                 _info.obj = _popup.gameObject;
                 _info.comp = _popup;
-                _popup.CheckLinking(() => 
-                {
+                _popup.gameObject.SetActive(true);
+                _popup.SetElements( () => {
                     PopupSetActive(_type, _info, false);
                     popup_is_opening = false;
                     Result(_info);
@@ -150,8 +143,8 @@ public class PopupMgr : MonoBehaviour
                     var _popup = pool_popup_list[_type];
                     _info.obj = _popup.gameObject;
                     _info.comp = _popup;
-                    _popup.CheckLinking(() => 
-                    {
+                    _popup.gameObject.SetActive(true);
+                    _popup.SetElements( () => {
                         PopupSetActive(_type, _info, true);
                         popup_is_opening = false;
                         Result(_info);
@@ -167,9 +160,8 @@ public class PopupMgr : MonoBehaviour
                 _info.obj = _obj;
                 _info.comp = _obj.GetComponent<T>();
                 pool_popup_list.Add(_type, _info.comp);
-                _info.obj.SetActive(false);
-                _info.comp.CheckLinking(() => 
-                {
+                _info.obj.SetActive(true);
+                _info.comp.SetElements( () => {
                     PopupSetActive(_type, _info, false);
                     popup_is_opening = false;
                     Result(_info);
@@ -182,9 +174,9 @@ public class PopupMgr : MonoBehaviour
     {
         if (!_over_able)
             active_popup_list.Add(_type, _info.comp);
-        active_popup_list[_type].gameObject.SetActive(true);
         PopupOrderInit(active_popup_list[_type]);
         active_popup_list[_type].Open();
+        active_popup_list[_type].OnOpened();
     }
 
     private static void PopupOrderInit(Popup _comp)

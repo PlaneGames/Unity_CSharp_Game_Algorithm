@@ -558,6 +558,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1459190877}
   - component: {fileID: 1459190878}
+  - component: {fileID: 1459190879}
   m_Layer: 0
   m_Name: PopupMgr
   m_TagString: Untagged
@@ -589,5 +590,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c1182791a9bb2b64a9c9fe1fdc9ac2e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1459190879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459190876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 035fa9e12687576478a2d152798ecb97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

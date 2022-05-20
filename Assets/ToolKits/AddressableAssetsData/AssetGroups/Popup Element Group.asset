@@ -10,28 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Popup Group
+  m_Name: Popup Element Group
   m_EditorClassIdentifier: 
-  m_GroupName: Popup Group
+  m_GroupName: Popup Element Group
   m_Data:
     m_SerializedData: []
-  m_GUID: bd68f9093b9e074489bfd892daffacfb
+  m_GUID: a05066531bb5bb5458416ad3c5e80a52
   m_SerializeEntries:
-  - m_GUID: 7e358a2f18411524aa5bfc94087da7d8
-    m_Address: PopupShop
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 91b731b7f0a873341b6e4f531a668b44
-    m_Address: Canvas
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 99e84b797e8d7304291a5192cfaf0dd1
-    m_Address: PopupException
+  - m_GUID: 85562497fd0c4c84a8ca21d436b28313
+    m_Address: PopupElementCover
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bc4e2c821e9b5c04997bf54e3d40930b, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 971a0c10d32df5c49a44b4feb9f29fb9, type: 2}
-    - {fileID: 11400000, guid: 6f23365df8011934882f6f974d62dd48, type: 2}
+    - {fileID: 11400000, guid: a72c54c89caec004d8d5f202dd7857ef, type: 2}
+    - {fileID: 11400000, guid: 492fecfb87b6a4440872779e692d74f0, type: 2}
