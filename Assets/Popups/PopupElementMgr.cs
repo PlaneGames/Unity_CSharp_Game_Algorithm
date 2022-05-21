@@ -10,7 +10,7 @@ using UnityEngine.AddressableAssets;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.20
+Version : 22.05.21
 */
 
 public struct PopupElementInfo
@@ -79,6 +79,7 @@ public class PopupElementMgr : MonoBehaviour
             {
                 _result.obj = PE_pool[_type][0].gameObject;
                 _result.comp = PE_pool[_type][0];
+                PE_pool[_type][0].transform.SetParent(_popup.transform);
                 PE_pool[_type][0].OnOpened();
                 Result(_result);
             }

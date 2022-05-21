@@ -339,7 +339,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvas: {fileID: 4418062016506007834}
   key: 0
-  rect: {fileID: 4320190358138177751}
+  rect: {fileID: 6056813037503526703}
   image: {fileID: 0}
   open_ani_type: 0
   close_ani_type: 2

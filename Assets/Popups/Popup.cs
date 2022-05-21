@@ -34,23 +34,21 @@ public abstract class Popup : MonoBehaviour
     public List<PopupElement> linked_PEs { get; set; }
 
     public RectTransform rect;
-    public Image image;
+    [HideInInspector] public Image image;
     public POPUP_ANI open_ani_type;
     public POPUP_ANI close_ani_type;
 
-    private Sequence seq;
+    [HideInInspector] public Sequence seq;
     private bool is_closing;
 
     public void SetElements(Action Result)
     {
         IEnumerator _push_PEs()
         {
-            Debug.Log("SetElements Start.");
             List<int> _un_pushed_list = new List<int>();
             _un_pushed_list.Add(0);
 
             PopupElementMgr.GetPE<PopupElementCover>(this, ( Result ) => {
-                Debug.Log("pushed !"); 
                 linked_PEs.Add(Result.comp);
                 _un_pushed_list.Remove(0);
             });
@@ -89,7 +87,7 @@ public abstract class Popup : MonoBehaviour
     public void Open()
     {
         is_closing = false;
-        SetAni(open_ani_type);
+        PopupAniCtr.SetAni(this, open_ani_type, () => {});
     }
 
     public void Close()
@@ -99,7 +97,9 @@ public abstract class Popup : MonoBehaviour
 
         CloseElements();
         is_closing = true;
-        SetAni(close_ani_type);
+        PopupAniCtr.SetAni(this, close_ani_type, () => {
+            PopupMgr.RemovePopup(GetType());
+        });
     }
 
     private void CloseElements()
@@ -118,44 +118,4 @@ public abstract class Popup : MonoBehaviour
     public abstract void OnOpened();
 
     public abstract void OnClosed();
-
-    public void SetAni(POPUP_ANI _type)
-    {
-        seq.Rewind(false);
-        seq.Kill(true);
-        seq = DOTween.Sequence().SetAutoKill(false);
-        switch (_type)
-        {
-            case POPUP_ANI.OPEN_CLOSEUP:
-            rect.localScale = new Vector2(0.3f, 0.3f);
-            seq
-            .Insert(0f, rect.DOScale(new Vector2(1f, 1f), 0.25f).SetEase(Ease.OutBack));
-            break;
-
-            case POPUP_ANI.OPEN_FADEIN:
-            if (image == null)
-            {
-                image = this.GetComponent<Image>();
-            }
-            seq
-            .Insert(0f, image.DOFade(.7f, 0.25f));
-            break;
-
-            case POPUP_ANI.CLOSE_GETAWAY:
-            seq
-            .Insert(0f, rect.DOScale(new Vector2(0.1f, 0.1f), 0.25f).SetEase(Ease.InBack))
-            .InsertCallback(0.25f, () => { PopupMgr.RemovePopup(this.GetType()); } );
-            break;
-
-            case POPUP_ANI.CLOSE_FADEOUT:
-            if (image == null)
-            {
-                image = GetComponent<Image>();
-            }
-            seq
-            .Insert(0f, image.DOFade(0f, 0.25f))
-            .InsertCallback(0.25f, () => { PopupMgr.RemovePopup(this.GetType()); } );
-            break;
-        }
-    }
 }
