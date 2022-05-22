@@ -29,9 +29,7 @@ public class PopupElementMgr : MonoBehaviour
 {
 
     public static Dictionary<Type, PopupElementInfo> PE_infos;
-
     public static Dictionary<Type, List<PopupElement>> PE_pool;
-    public static Dictionary<Type, List<PopupElement>> active_PE_list;
 
     private void Start()
     {
@@ -50,9 +48,6 @@ public class PopupElementMgr : MonoBehaviour
 
         PE_pool = null;
         PE_pool = new Dictionary<Type, List<PopupElement>>();
-
-        active_PE_list = null; 
-        active_PE_list = new Dictionary<Type, List<PopupElement>>();
     }
 
     /// <summary> Initialize The Popup. <br/>Create The GameObject In The Current Scene. </summary>
@@ -67,11 +62,11 @@ public class PopupElementMgr : MonoBehaviour
             Debug.LogError(_info.pref_address + " 팝업이 중복으로 초기화되었습니다.");
     }
 
+    /// <summary> Get Popup Element Data. <br/>- Left Pool : Active Object. <br/>- No Left Pool : Instantiate Object. </summary>
     public static void GetPE<T>(Popup _popup, Action<PopupElementResult> Result) where T : PopupElement
     {
         PopupElementResult _result;
         Type _type = typeof(T);
-        Debug.Log(PE_pool[_type].Count);
 
         if (PE_pool.ContainsKey(_type))
         {
@@ -89,6 +84,7 @@ public class PopupElementMgr : MonoBehaviour
                 {
                     _result.obj = handle.Result;
                     _result.comp = _result.obj.GetComponent<T>();
+                    _result.comp.OnOpened();
                     Result(_result);
                 };
             }

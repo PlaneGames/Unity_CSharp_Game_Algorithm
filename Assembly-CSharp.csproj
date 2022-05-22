@@ -36,14 +36,15 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Popups\PopupElement.cs" />
      <Compile Include="Assets\Popups\SceneMgr.cs" />
      <Compile Include="Assets\Popups\PopupMgr.cs" />
      <Compile Include="Assets\Popups\PopupException.cs" />
      <Compile Include="Assets\Popups\PopupElementCover.cs" />
      <Compile Include="Assets\Popups\PopupShop.cs" />
-     <Compile Include="Assets\Popups\Popup.cs" />
      <Compile Include="Assets\Popups\PopupElementMgr.cs" />
-     <Compile Include="Assets\Popups\PopupElement.cs" />
+     <Compile Include="Assets\Popups\Popup.cs" />
+     <Compile Include="Assets\Popups\PopupAniCtr.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.21f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -267,25 +268,19 @@
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.21f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
     </Reference>
     <Reference Include="DemiLib">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Assets\Plugins\Demigiant\DemiLib\Core\DemiLib.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Assets\Plugins\Demigiant\DemiLib\Core\DemiLib.dll</HintPath>
     </Reference>
     <Reference Include="DOTween">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Assets\Plugins\Demigiant\DOTween\DOTween.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Assets\Plugins\Demigiant\DOTween\DOTween.dll</HintPath>
     </Reference>
     <Reference Include="RainbowHierarchy">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Assets\Plugins\Borodar\RainbowHierarchy\Assemblies\RainbowHierarchy.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Assets\Plugins\Borodar\RainbowHierarchy\Assemblies\RainbowHierarchy.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\PackageCache\com.unity.nuget.newtonsoft-json@2.0.0\Runtime\Newtonsoft.Json.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\PackageCache\com.unity.nuget.newtonsoft-json@2.0.0\Runtime\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="DOTweenPro">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Assets\Plugins\Demigiant\DOTweenPro\DOTweenPro.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
-        <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.21f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Common">
-        <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.21f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Common.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Assets\Plugins\Demigiant\DOTweenPro\DOTweenPro.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.21f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
@@ -633,52 +628,52 @@
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.21f1\Editor\Data\NetStandard\compat\2.0.0\shims\netfx\System.Xml.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.CacheServer">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\UnityEditor.CacheServer.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\UnityEditor.CacheServer.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Addressables">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.Addressables.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.Addressables.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualStudio.Editor">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline.Editor">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ScriptableBuildPipeline">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.ScriptableBuildPipeline.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.ScriptableBuildPipeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Addressables.Editor">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.Addressables.Editor.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.Addressables.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ResourceManager">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.ResourceManager.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.ResourceManager.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ScriptableBuildPipeline.Editor">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.ScriptableBuildPipeline.Editor.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.ScriptableBuildPipeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PlasticSCM.Editor">
-        <HintPath>C:\Users\solid8\Documents\Research Elements\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
+        <HintPath>E:\Projects\Unity_CSharp_Game_Algorithm\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
