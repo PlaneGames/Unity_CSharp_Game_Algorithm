@@ -93,6 +93,7 @@ public class SceneMgr : MonoBehaviour
         Addressables.InstantiateAsync(canvas_pref_address).Completed += (handle) =>
         {
             GameObject _obj = handle.Result;
+            _obj.transform.SetSiblingIndex(3);
             _info.SetInfo(_obj, _obj.GetComponent<Canvas>(), _obj.GetComponent<CanvasScaler>(), _obj.transform);
             SetCanvasScaleType(_type, _info);
             active_canvas_list.Add(_type, _info);
@@ -109,40 +110,40 @@ public class SceneMgr : MonoBehaviour
             _canv_s.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             _canv_s.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             _canv_s.matchWidthOrHeight = 0f;
-            _canv_info.SetName("@Canvas_Width");
+            _canv_info.SetName("@ Canvas_Width");
             break;
 
             case CANVAS_TYPE.MATCH_HEIGHT:
             _canv_s.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             _canv_s.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             _canv_s.matchWidthOrHeight = 1f;
-            _canv_info.SetName("@Canvas_Height");
+            _canv_info.SetName("@ Canvas_Height");
             break;
 
             case CANVAS_TYPE.MATCH_CENTER:
             _canv_s.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             _canv_s.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             _canv_s.matchWidthOrHeight = 0.5f;
-            _canv_info.SetName("@Canvas_Center");
+            _canv_info.SetName("@ Canvas_Center");
             break;
 
             case CANVAS_TYPE.MATCH_CUSTOM:
             _canv_s.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             _canv_s.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             _canv_s.matchWidthOrHeight = 0.5f;
-            _canv_info.SetName("@Canvas_Custom");
+            _canv_info.SetName("@ Canvas_Custom");
             break;
 
             case CANVAS_TYPE.EXPAND:
             _canv_s.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             _canv_s.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
-            _canv_info.SetName("@Canvas_Expand");
+            _canv_info.SetName("@ Canvas_Expand");
             break;
 
             case CANVAS_TYPE.SHRINK:
             _canv_s.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             _canv_s.screenMatchMode = CanvasScaler.ScreenMatchMode.Shrink;
-            _canv_info.SetName("@Canvas_Shrink");
+            _canv_info.SetName("@ Canvas_Shrink");
             break;
         }
     }

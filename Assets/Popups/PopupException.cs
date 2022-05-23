@@ -5,17 +5,22 @@ using UnityEngine;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.19
+Version : 22.05.23
 */
 
 public class PopupException : Popup
 { 
 
-    public override void OnOpened()
+    protected override void Init()
+    {
+
+    }
+
+    protected override void OnOpened()
     {
     }
 
-    public override void OnClosed()
+    protected override void OnClosed()
     {
     }
 

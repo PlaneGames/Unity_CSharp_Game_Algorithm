@@ -5,17 +5,22 @@ using UnityEngine;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.20
+Version : 22.05.23
 */
 
 public class PopupShop : Popup
 {
     
-    public override void OnOpened()
+    protected override void Init()
+    {
+        
+    }
+
+    protected override void OnOpened()
     {
     }
 
-    public override void OnClosed()
+    protected override void OnClosed()
     {
     }
 

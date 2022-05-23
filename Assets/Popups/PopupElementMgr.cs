@@ -13,6 +13,11 @@ Developer : Jae Young Kwon
 Version : 22.05.21
 */
 
+public enum PE_NAME
+{
+    PopupElementCover,
+}
+
 public struct PopupElementInfo
 { 
     public string pref_address;
@@ -22,6 +27,12 @@ public struct PopupElementResult
 {
     public GameObject obj;
     public PopupElement comp;
+
+    public PopupElementResult(GameObject _obj, PopupElement _pe)
+    {
+        obj = _obj;
+        comp = _pe;
+    }
 }
 
 /// <summary> The Popup Element Manager. <br/> - 'PE' Means 'Popup Element'. </summary>
@@ -68,27 +79,36 @@ public class PopupElementMgr : MonoBehaviour
         PopupElementResult _result;
         Type _type = typeof(T);
 
+        void _SetInit(GameObject _obj, PopupElement _pe)
+        {
+            _result = new PopupElementResult(_obj, _pe);
+            _obj.transform.SetParent(_popup.transform);
+            _pe.OnOpened();
+            Result(_result);
+        }
+
         if (PE_pool.ContainsKey(_type))
         {
             if (PE_pool[_type].Count > 0)
             {
-                _result.obj = PE_pool[_type][0].gameObject;
-                _result.comp = PE_pool[_type][0];
-                PE_pool[_type][0].transform.SetParent(_popup.transform);
-                PE_pool[_type][0].OnOpened();
-                Result(_result);
+                _SetInit(PE_pool[_type][0].gameObject, PE_pool[_type][0]);
             }
             else
             {
                 Addressables.InstantiateAsync(PE_infos[_type].pref_address, _popup.transform).Completed += (handle) =>
                 {
-                    _result.obj = handle.Result;
-                    _result.comp = _result.obj.GetComponent<T>();
-                    _result.comp.OnOpened();
-                    Result(_result);
+                    _SetInit(handle.Result, handle.Result.GetComponent<T>());
+                    handle.Result.name = "@ " + handle.Result.name;
                 };
             }
         }
+    }
+
+    public static void GetPE(Type _type, Popup _popup, Action<PopupElementResult> Result)
+    {
+        MethodInfo get_pe = typeof(PopupElementMgr).GetMethod("GetPE", new Type[] { typeof(Popup), typeof(Action<PopupElementResult>) } );
+        get_pe = get_pe.MakeGenericMethod(_type);
+        get_pe.Invoke(null, new object[] { _popup, Result });
     }
 
     public static void Pop(PopupElement _pe)

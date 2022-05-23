@@ -275,8 +275,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6147996632523172249}
-        m_TargetAssemblyTypeName: PopupShop, Assembly-CSharp
-        m_MethodName: Close
+        m_TargetAssemblyTypeName: Popup, Assembly-CSharp
+        m_MethodName: OnClose
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -338,11 +338,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 4418062016506007834}
-  key: 0
   rect: {fileID: 6056813037503526703}
-  image: {fileID: 0}
   open_ani_type: 0
   close_ani_type: 2
+  popup_elements_to_link: 00000000
+  image: {fileID: 0}
 --- !u!223 &4418062016506007834
 Canvas:
   m_ObjectHideFlags: 0

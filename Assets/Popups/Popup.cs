@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,7 +9,7 @@ using DG.Tweening;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.19
+Version : 22.05.23
 */
 
 public enum POPUP_ANI
@@ -29,30 +30,42 @@ public struct LinkToPEInfo
 /// <summary> Parent of Every Popups. </summary>
 public abstract class Popup : MonoBehaviour
 {
+    [Header ("< Popup Basic Infos >")]
     public Canvas canvas;
-    public int key = 0;
-    public List<PopupElement> linked_PEs { get; set; }
-
     public RectTransform rect;
-    [HideInInspector] public Image image;
     public POPUP_ANI open_ani_type;
     public POPUP_ANI close_ani_type;
+    public PE_NAME[] popup_elements_to_link;
 
+    [HideInInspector] public Image image;
     [HideInInspector] public Sequence seq;
     private bool is_closing;
 
+    private List<PopupElement> linked_PEs { get; set; }
+
+
     public void SetElements(Action Result)
     {
+        int i;
+
         IEnumerator _push_PEs()
         {
             List<int> _un_pushed_list = new List<int>();
-            _un_pushed_list.Add(0);
 
-            PopupElementMgr.GetPE<PopupElementCover>(this, ( Result ) => {
-                linked_PEs.Add(Result.comp);
-                _un_pushed_list.Remove(0);
-            });
-
+            for (i = 0; i < popup_elements_to_link.Length; i ++)
+            {
+                _un_pushed_list.Add(0);
+                Type _type = Type.GetType(popup_elements_to_link[i].ToString());
+                if (_type != null)
+                {
+                    PopupElementMgr.GetPE(_type, this, ( Result ) => {
+                        linked_PEs.Add(Result.comp);
+                        Result.comp.SetOrder(canvas.sortingOrder - 1);
+                        _un_pushed_list.Remove(0);
+                    });
+                }
+            }
+            
             while (true)
             {
                 if (_un_pushed_list.Count == 0)
@@ -74,31 +87,34 @@ public abstract class Popup : MonoBehaviour
         StartCoroutine(_push_PEs());
     }
 
-    public void SetKey(int _key)
-    {
-        key = _key;
-    }
-
     public void SetOrderLayer(int _order)
     {
         canvas.sortingOrder = _order;
     }
 
-    public void Open()
+    public void OnOpen()
     {
+        Init();
         is_closing = false;
-        PopupAniCtr.SetAni(this, open_ani_type, () => {});
+        PopupMgr.Pop(this);
+        PopupAniCtr.SetAni(this, open_ani_type, () => 
+        {
+            OnOpened(); 
+        });
     }
 
-    public void Close()
+    public void OnClose()
     {
         if (is_closing)
             return;
 
         CloseElements();
         is_closing = true;
-        PopupAniCtr.SetAni(this, close_ani_type, () => {
-            PopupMgr.RemovePopup(GetType());
+        PopupAniCtr.SetAni(this, close_ani_type, () => 
+        {
+            PopupMgr.Push(this);
+            OnClosed();
+            gameObject.SetActive(false);
         });
     }
 
@@ -115,7 +131,13 @@ public abstract class Popup : MonoBehaviour
         }
     }
 
-    public abstract void OnOpened();
+    protected virtual void Init()
+    {
 
-    public abstract void OnClosed();
+    }
+
+    protected abstract void OnOpened();
+
+    protected abstract void OnClosed();
+
 }
