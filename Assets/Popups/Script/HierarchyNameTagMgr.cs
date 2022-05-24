@@ -16,25 +16,19 @@ public struct GameObjectNameTag
 public class HierarchyNameTagMgr : MonoBehaviour
 {
     [Header ("< Name Tag Setting >")]
-    public Color BG_col   = new Color(0f, 0f, 0f, 0f);
-    public Color text_col = new Color(1f, 0.729f, 0f, 1f);
     public GameObjectNameTag[] name_tag;
 
     public static List<GameObjectNameTag> Name_Tag;
-    public static Color BG_COL, TEXT_COL;
+
 
     private void Awake() 
     {
         SetNameTag();
-        BG_COL = BG_col;
-        TEXT_COL = text_col;
     }
     
     private void Update()
     {
         SetNameTag();
-        BG_COL = BG_col;
-        TEXT_COL = text_col;
     }
 
     private void SetNameTag()

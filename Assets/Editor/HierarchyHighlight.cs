@@ -21,6 +21,10 @@ namespace Assets.Editor
             EditorApplication.hierarchyWindowItemOnGUI += HierarchyHighlight_OnGUI;
         }
 
+        private void OnGUI() {
+            EditorGUIUtility.SetIconSize(new Vector2(8, 8));
+        }
+
 
         private static void HierarchyHighlight_OnGUI(int inSelectionID, Rect inSelectionRect)
         {
@@ -43,69 +47,13 @@ namespace Assets.Editor
 
                 if (_obj.name.Contains("@") && Event.current.type == EventType.Repaint)
                 {
-                    bool ObjectIsSelected = Selection.instanceIDs.Contains(inSelectionID);
-
-                    Rect _selection_rect = new Rect (inSelectionRect);
-                    _selection_rect.x = 0;
-                    _selection_rect.y = inSelectionRect.position.y;
-                    _selection_rect.width = GUILayoutUtility.GetLastRect().width;
-
-                    if (_selection_rect.Contains(Event.current.mousePosition))
-                    {
-                        Debug.Log(GUI.contentColor);
-                    }
-                    else
-                    {
-
-                    }
-
-                    Rect _panel = new Rect (inSelectionRect);
-                    _panel.x = 60;
-                    _panel.y = inSelectionRect.position.y;
-                    _panel.width = 16;
-                    _panel.height = 16;
-                    
-                    Color _prev_c = GUI.color;
-                    Color _cur_c = Color.white - _prev_c + new Color(0f, 0f, 0f, 1f);
-                    EditorGUI.DrawRect(_panel, _cur_c);
-                    
-                    if (ObjectIsSelected)
-                        _cur_c = GUI.skin.settings.selectionColor;
-                    else
-                        _cur_c = Color.white - _prev_c + new Color(0f, 0f, 0f, 1f);
-
-                    EditorGUI.DrawRect(_panel, _cur_c);
-
-
-                    Rect r = new Rect (inSelectionRect); 
-                    r.x = 58;
-                    r.y = inSelectionRect.position.y - 2.5f;
-                    r.width = 20;
-                    r.height = 20;
-
-                    GUI.color = _prev_c;
-                    GUI.Label (r, texture); 
-                    
-                    
                     if (!_obj.activeSelf)
                     {
                         TextCol = new Color(1f, 1f, 1f, 0.7f);
                     }
                     
                     FontStyle TextStyle = FontStyle.Normal;
-
                     Rect Offset = new Rect(inSelectionRect.position + new Vector2(18f, 0f), new Vector2(14f, 0f));
-
-                    if (BKCol.a > 0f)
-                    {
-                        Rect BackgroundOffset = new Rect(inSelectionRect.position + new Vector2(18f, 0f), inSelectionRect.size);
-                        EditorGUI.DrawRect(BackgroundOffset, new Color(0.76f, 0.76f, 0.76f, 1f));
-
-                        if (ObjectIsSelected)
-                            EditorGUI.DrawRect(BackgroundOffset, Color.Lerp(GUI.skin.settings.selectionColor, BKCol, 0.3f));
-                        else
-                            EditorGUI.DrawRect(BackgroundOffset, BKCol);
-                    }
 
                     EditorGUI.LabelField(Offset, "@", new GUIStyle()
                     {

@@ -30,13 +30,20 @@ public struct CanvasInfo
     public Canvas canvas;
     public CanvasScaler canvas_scaler;
     public Transform trans;
+    public Transform trans_popup_pool;
+    public Transform trans_PE_pool;
+    public Transform trans_popup;
 
-    public void SetInfo(GameObject _obj, Canvas _canv, CanvasScaler _canvas_scaler, Transform _trans)
+    public void SetInfo(GameObject _obj, Canvas _canv, CanvasScaler _canvas_scaler, 
+                        Transform _trans, Transform _trans_ppool, Transform _trans_pepool, Transform _trans_p)
     {
         obj = _obj;
         canvas = _canv;
         canvas_scaler = _canvas_scaler;
         trans = _trans;
+        trans_popup_pool = _trans_ppool;
+        trans_PE_pool = _trans_pepool;
+        trans_popup = _trans_p;
     }
 
     public void SetName(string _name)
@@ -69,9 +76,7 @@ public class SceneMgr : MonoBehaviour
 
         GenCanvas(CANVAS_TYPE.EXPAND, ( CanvasInfo Result ) => 
         {
-
             canvas_set_complete = true;
-
         });
     }
 
@@ -94,7 +99,8 @@ public class SceneMgr : MonoBehaviour
         {
             GameObject _obj = handle.Result;
             _obj.transform.SetSiblingIndex(3);
-            _info.SetInfo(_obj, _obj.GetComponent<Canvas>(), _obj.GetComponent<CanvasScaler>(), _obj.transform);
+            _info.SetInfo(_obj, _obj.GetComponent<Canvas>(), _obj.GetComponent<CanvasScaler>(), 
+                          _obj.transform, _obj.transform.GetChild(0), _obj.transform.GetChild(1), _obj.transform.GetChild(2));
             SetCanvasScaleType(_type, _info);
             active_canvas_list.Add(_type, _info);
             Result(_info);

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -191,7 +191,7 @@ MonoBehaviour:
     IsHidden: 0
 --- !u!4 &118023020
 Transform:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -478,7 +478,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4efcf95cd9a70ae41b2c1a14c9ac4086, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BG_col: {r: 0, g: 0, b: 0, a: 0}
+  BG_col: {r: 0.13725491, g: 0.2901961, b: 0.42352945, a: 0}
   text_col: {r: 1, g: 0.7294118, b: 0, a: 1}
   name_tag:
   - name: PopupElement

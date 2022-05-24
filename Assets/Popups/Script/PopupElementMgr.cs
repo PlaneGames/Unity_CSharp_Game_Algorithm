@@ -119,6 +119,7 @@ public class PopupElementMgr : MonoBehaviour
     public static void Push(PopupElement _pe)
     {
         PE_pool[_pe.GetType()].Add(_pe);
+        _pe.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_PE_pool);
     }
 
 }
