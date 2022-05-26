@@ -27,6 +27,8 @@ public static class EditorCollapseAll
 	private static readonly MethodInfo TREE_VIEW_ITEMS_METHOD;
 	private static readonly PropertyInfo TREE_VIEW_OBJECT_PROPERTY;
 
+	public static Texture2D texture;
+
 // Windows cache 
         private static double _nextWindowsUpdate;
         private static EditorWindow[] _windowsCache;
@@ -50,6 +52,8 @@ public static class EditorCollapseAll
 		var treeViewItem = assembly.GetType("UnityEditor.GameObjectTreeViewItem");
 		TREE_VIEW_OBJECT_PROPERTY = treeViewItem.GetProperty("objectPPTR", INSTANCE_PUBLIC);
 
+		texture = AssetDatabase.LoadAssetAtPath ("Assets/folder.png", typeof(Texture2D)) as Texture2D;
+
 		EditorApplication.projectWindowItemOnGUI -= ChangeIcon;
         EditorApplication.projectWindowItemOnGUI += ChangeIcon;
 
@@ -67,9 +71,12 @@ public static class EditorCollapseAll
 
 			List<int> treeViewSelectedIDs = new List<int>( treeViewState.selectedIDs );
 
+			TreeViewItem rootItem = (TreeViewItem) treeViewDataSource.GetType().GetField( "m_RootItem", INSTANCE_FLAGS ).GetValue( treeViewDataSource );
+			
 			bool isSearchFilterRootExpanded = (bool) treeViewDataSource.GetType().GetMethod( "IsExpanded", INSTANCE_FLAGS, null, new System.Type[] { typeof( int ) }, null ).Invoke( treeViewDataSource, new object[] { treeViewSelectedIDs[0] } );
-			Debug.Log(folderTree);
-
+			object a = folderTree.GetType().GetMethod( "FindRowOfItem", INSTANCE_FLAGS).Invoke( folderTree, new object[] { rootItem });
+			Debug.Log(a);
+			GUI.DrawTexture(rect, texture);
 			projectWindow.Repaint();
 		}
 	}
@@ -200,7 +207,6 @@ public static class EditorCollapseAll
 
 		int searchFiltersRootInstanceID = (int) typeof( EditorWindow ).Assembly.GetType( "UnityEditor.SavedSearchFilters" ).GetMethod( "GetRootInstanceID", STATIC_FLAGS ).Invoke( null, null );
 		bool isSearchFilterRootExpanded = (bool) treeViewDataSource.GetType().GetMethod( "IsExpanded", INSTANCE_FLAGS, null, new System.Type[] { typeof( int ) }, null ).Invoke( treeViewDataSource, new object[] { treeViewSelectedIDs[0] } );
-		Debug.Log(isSearchFilterRootExpanded);
 #if UNITY_2019_1_OR_NEWER
 		treeViewDataSource.GetType().GetMethod( "RevealItems", INSTANCE_FLAGS ).Invoke( treeViewDataSource, new object[] { treeViewSelectedIDs.ToArray() } );
 #else
