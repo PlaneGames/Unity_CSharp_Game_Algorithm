@@ -14,7 +14,7 @@ namespace Assets.Editor
     public class HierarchyHighlightManager
     {
         public static GUISkin testGUIskin;
-        static Texture2D texture;
+        public static Texture2D texture;
         static Texture2D icon_menu;
         static int minSelectionID;
         static Rect minSelectionRect;
@@ -81,7 +81,6 @@ namespace Assets.Editor
                 _nextWindowsUpdate = EditorApplication.timeSinceStartup + EDITOR_WINDOWS_CACHE_TTL;
                 _windowsCache = GetAllWindowsByType(EDITOR_WINDOW_TYPE).ToArray();
             }
-            Debug.Log(_windowsCache[0]);
             return _windowsCache;
         }
 
