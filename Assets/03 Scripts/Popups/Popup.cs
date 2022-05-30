@@ -40,11 +40,31 @@ public abstract class Popup : MonoBehaviour
     [HideInInspector] public Image image;
     [HideInInspector] public Sequence seq;
     private bool is_closing;
+    private bool is_loaded;
 
     private List<PopupElement> linked_PEs { get; set; }
 
+    public void PoolingPEs(Action Result)
+    {
+        SetElements(() => {
+            PushPEs();
+            Debug.Log(linked_PEs.Count);
+            is_loaded = true;
+            Result();
+        });
+    }
 
-    public void SetElements(Action Result)
+    public void GetPEs(Action Result)
+    {
+        SetElements(() => {
+            OpenPEs();
+            Debug.Log(linked_PEs.Count);
+            is_loaded = true;
+            Result();
+        });
+    }
+
+    private void SetElements(Action Result)
     {
         int i;
 
@@ -84,7 +104,36 @@ public abstract class Popup : MonoBehaviour
         {
             linked_PEs = new List<PopupElement>();
         }
-        StartCoroutine(_push_PEs());
+        if (!is_loaded)
+            StartCoroutine(_push_PEs());
+        else
+            Result();
+
+    }
+
+    private void PushPEs()
+    {
+        if (linked_PEs != null && linked_PEs.Count > 0)
+        {
+            int i;
+            for (i = 0; i < linked_PEs.Count; i ++)
+            {
+                PopupElementMgr.Push(linked_PEs[i]);
+                linked_PEs[i].gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private void OpenPEs()
+    {
+        if (linked_PEs != null && linked_PEs.Count > 0)
+        {
+            int i;
+            for (i = 0; i < linked_PEs.Count; i ++)
+            {
+                linked_PEs[i].OnOpened();
+            }
+        }
     }
 
     public void SetOrderLayer(int _order)
@@ -115,6 +164,7 @@ public abstract class Popup : MonoBehaviour
             PopupMgr.Push(this);
             OnClosed();
             gameObject.SetActive(false);
+            is_loaded = false;
         });
     }
 

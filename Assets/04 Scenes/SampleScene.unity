@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311992, g: 0.38074034, b: 0.35872713, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -400,7 +400,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name_tag:
   - name: PopupElement
-    BG_col: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 0}
+    BG_col: {r: 1, g: 1, b: 1, a: 0}
     text_col: {r: 1, g: 0.4161933, b: 0, a: 1}
   - name: Popup
     BG_col: {r: 1, g: 1, b: 1, a: 0}

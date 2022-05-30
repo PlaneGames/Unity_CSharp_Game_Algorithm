@@ -8,6 +8,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.IO;
 
+/*
+Developer : Jae Young Kwon
+Version : 22.05.30
+*/
+
 [InitializeOnLoad]
 public static class ProjectBrowserGUI
 {
@@ -16,6 +21,7 @@ public static class ProjectBrowserGUI
 	{
 		public Color color;
 		public Texture2D tag_icon;
+		public Texture2D tag_icon_L;
 	}
 
 
@@ -23,8 +29,8 @@ public static class ProjectBrowserGUI
 	private const BindingFlags STATIC_FLAGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
 	public static Texture2D texture_folder_normal;
+	public static Texture2D texture_folder_normal_L;
 	public static Texture2D texture_folder_opened;
-	public static Texture2D texture_empty;
 
 	static Dictionary<string, FolderStyle> folders_styles;
 	static List<string> data_type_filter;
@@ -34,8 +40,8 @@ public static class ProjectBrowserGUI
 		var assembly = Assembly.GetAssembly(typeof(EditorWindow));
 
 		texture_folder_normal = AssetDatabase.LoadAssetAtPath ("Assets/01 Arts/EditorGUI/FolderIcons/folder_normal.png", typeof(Texture2D)) as Texture2D;
+		texture_folder_normal_L = AssetDatabase.LoadAssetAtPath ("Assets/01 Arts/EditorGUI/FolderIcons/folder_normal_L.png", typeof(Texture2D)) as Texture2D;
 		texture_folder_opened = AssetDatabase.LoadAssetAtPath ("Assets/01 Arts/EditorGUI/FolderIcons/folder_opened.png", typeof(Texture2D)) as Texture2D;
-		texture_empty = AssetDatabase.LoadAssetAtPath ("Assets/icon_empty.png", typeof(Texture2D)) as Texture2D;
 
 		EditorApplication.projectWindowItemOnGUI -= ChangeIcon;
         EditorApplication.projectWindowItemOnGUI += ChangeIcon;
@@ -44,9 +50,9 @@ public static class ProjectBrowserGUI
 		folders_styles = new Dictionary<string, FolderStyle>();
 
 		InitFolderStyle( "01 Arts", SetHexToColor( "#EB645F" ) );
-		InitFolderStyle( "02 Prefabs", SetHexToColor( "#6CC1FD" ), "Assets/01 Arts/EditorGUI/FolderIcons/folder_tag_object.png" );
-		InitFolderStyle( "03 Scripts", SetHexToColor( "#338A36" ), "Assets/01 Arts/EditorGUI/FolderIcons/folder_tag_script.png");
-		InitFolderStyle( "04 Scenes", SetHexToColor( "#565656" ), "Assets/01 Arts/EditorGUI/FolderIcons/folder_tag_scene.png");
+		InitFolderStyle( "02 Prefabs", SetHexToColor( "#6CC1FD" ), "folder_tag_object.png", "folder_tag_object_L.png" );
+		InitFolderStyle( "03 Scripts", SetHexToColor( "#338A36" ), "folder_tag_script.png", "folder_tag_script_L.png");
+		InitFolderStyle( "04 Scenes", SetHexToColor( "#565656" ), "folder_tag_scene.png", "folder_tag_scene_L.png");
 		InitFolderStyle( "05 Keyword", SetHexToColor( "#A26AE2" ) );
 		InitFolderStyle( "06 ToolKit", SetHexToColor( "#828282" ) );
 
@@ -70,22 +76,24 @@ public static class ProjectBrowserGUI
 	
 	static void InitFolderStyle(string _name, Color _color)
 	{
-		InitFolderStyle(_name, _color, (Texture2D)null);
+		InitFolderStyle(_name, _color, (Texture2D)null, (Texture2D)null);
 	}
 
-	static void InitFolderStyle(string _name, Color _color, Texture2D _tag_icon)
+	static void InitFolderStyle(string _name, Color _color, Texture2D _tag_icon, Texture2D _tag_icon_L)
 	{
 		FolderStyle _style;
 		_style.color = _color;
 		_style.tag_icon = _tag_icon;
+		_style.tag_icon_L = _tag_icon_L;
 		folders_styles.Add(_name, _style);
 	}
 
-	static void InitFolderStyle(string _name, Color _color, string _tag_icon_asset_path)
+	static void InitFolderStyle(string _name, Color _color, string _tag_icon_name, string _tag_icon_L_name)
 	{
 		FolderStyle _style;
 		_style.color = _color;
-		_style.tag_icon = AssetDatabase.LoadAssetAtPath (_tag_icon_asset_path, typeof(Texture2D)) as Texture2D;
+		_style.tag_icon = AssetDatabase.LoadAssetAtPath ("Assets/01 Arts/EditorGUI/FolderIcons/" + _tag_icon_name, typeof(Texture2D)) as Texture2D;
+		_style.tag_icon_L = AssetDatabase.LoadAssetAtPath ("Assets/01 Arts/EditorGUI/FolderIcons/" + _tag_icon_L_name, typeof(Texture2D)) as Texture2D;
 		folders_styles.Add(_name, _style);
 	}
 
@@ -137,7 +145,7 @@ public static class ProjectBrowserGUI
 			
 			string _root = AssetDatabase.GUIDToAssetPath(guid);
 			Object _obj = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(_root);
-			
+
 			if ( _obj != null)
 			{
 				if ( folders_styles.ContainsKey(_obj.name) && IsFolder(_root) && IsEmpty(_root) )
@@ -146,12 +154,16 @@ public static class ProjectBrowserGUI
 					bool isSearchFilterRootExpanded = (bool) treeViewDataSource.GetType().GetMethod( "IsExpanded", INSTANCE_FLAGS, null, new System.Type[] { typeof( int ) }, null ).Invoke( treeViewDataSource, new object[] { _obj.GetInstanceID() } );
 					Color _col_prev = GUI.color;
 
-					//GUI.color = new Color (0.2196f, 0.2196f, 0.2196f, 1f);
-					//GUI.DrawTexture(_rect, texture_empty);
-
 					if (rect.height > 20)
 					{
 						_rect = new Rect(rect.x, rect.y, rect.width, rect.width);
+						GUI.color = folders_styles[_obj.name].color;
+						GUI.DrawTexture(_rect, texture_folder_normal_L);
+						if (folders_styles[_obj.name].tag_icon != null)
+						{
+							GUI.color = _col_prev;
+							GUI.DrawTexture(_rect, folders_styles[_obj.name].tag_icon_L);
+						}
 					}
 					else if (rect.x > 15)
 					{
@@ -169,7 +181,14 @@ public static class ProjectBrowserGUI
 					}
 					else
 					{ 
-						_rect = new Rect(rect.x, rect.y, rect.height, rect.height);
+						_rect = new Rect(rect.x + 3f, rect.y, rect.height, rect.height);
+						GUI.color = folders_styles[_obj.name].color;
+						GUI.DrawTexture(_rect, texture_folder_normal);
+						if (folders_styles[_obj.name].tag_icon != null)
+						{
+							GUI.color = _col_prev;
+							GUI.DrawTexture(_rect, folders_styles[_obj.name].tag_icon);
+						}
 					}
 					GUI.color = _col_prev;
 				}
@@ -188,11 +207,10 @@ public static class ProjectBrowserGUI
 						_rect.width = rect.width - 80f;
 						GUI.Label(_rect, _data_type, _style);
 					}
-					//Debug.Log(GetFileDataType(_root));
 				}
 			}
-			projectWindow.Repaint();
 		}
+		projectWindow.Repaint();
 	}
 
 	static bool IsFolder(string _root)

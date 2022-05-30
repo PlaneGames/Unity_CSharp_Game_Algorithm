@@ -10,7 +10,7 @@ using UnityEngine.AddressableAssets;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.21
+Version : 22.05.30
 */
 
 public enum PE_NAME
@@ -73,6 +73,13 @@ public class PopupElementMgr : MonoBehaviour
             Debug.LogError(_info.pref_address + " 팝업이 중복으로 초기화되었습니다.");
     }
 
+    public static void GetPE(Type _type, Popup _popup, Action<PopupElementResult> Result)
+    {
+        MethodInfo get_pe = typeof(PopupElementMgr).GetMethod("GetPE", new Type[] { typeof(Popup), typeof(Action<PopupElementResult>) } );
+        get_pe = get_pe.MakeGenericMethod(_type);
+        get_pe.Invoke(null, new object[] { _popup, Result });
+    }
+
     /// <summary> Get Popup Element Data. <br/>- Left Pool : Active Object. <br/>- No Left Pool : Instantiate Object. </summary>
     public static void GetPE<T>(Popup _popup, Action<PopupElementResult> Result) where T : PopupElement
     {
@@ -83,7 +90,6 @@ public class PopupElementMgr : MonoBehaviour
         {
             _result = new PopupElementResult(_obj, _pe);
             _obj.transform.SetParent(_popup.transform);
-            _pe.OnOpened();
             Result(_result);
         }
 
@@ -104,13 +110,6 @@ public class PopupElementMgr : MonoBehaviour
         }
     }
 
-    public static void GetPE(Type _type, Popup _popup, Action<PopupElementResult> Result)
-    {
-        MethodInfo get_pe = typeof(PopupElementMgr).GetMethod("GetPE", new Type[] { typeof(Popup), typeof(Action<PopupElementResult>) } );
-        get_pe = get_pe.MakeGenericMethod(_type);
-        get_pe.Invoke(null, new object[] { _popup, Result });
-    }
-
     public static void Pop(PopupElement _pe)
     {
         PE_pool[_pe.GetType()].Remove(_pe);
@@ -119,7 +118,7 @@ public class PopupElementMgr : MonoBehaviour
     public static void Push(PopupElement _pe)
     {
         PE_pool[_pe.GetType()].Add(_pe);
-        _pe.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup_pool);
+        _pe.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_pool);
     }
 
 }

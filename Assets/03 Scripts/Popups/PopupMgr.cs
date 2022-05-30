@@ -10,7 +10,7 @@ using UnityEngine.AddressableAssets;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.23
+Version : 22.05.30
 */
 
 public struct PopupInfo
@@ -32,10 +32,13 @@ public struct PopupResult
 }
 
 
-/// <summary> The Popup Manager. </summary>
+/// <summary>  
+/// The Popup Manager. For Create, delete, And Manage. 
+/// <br/> - PopupInit : Only once, it should be used at the beginning of the scene.
+/// <br/> - GetPopup  : Can "pop up!" the scene.
+/// </summary>
 public class PopupMgr : MonoBehaviour
 {
-
     public static Dictionary<Type, PopupInfo> popup_infos;
     public static Dictionary<Type, List<Popup>> popup_pool;
     public static Dictionary<Type, int> popup_count_in_scene;
@@ -52,7 +55,7 @@ public class PopupMgr : MonoBehaviour
         Init();
 
         PopupInit<PopupShop>();
-        PopupInit<PopupException>();   
+        PopupInit<PopupException>();
     }
 
     private void Update()
@@ -130,7 +133,7 @@ public class PopupMgr : MonoBehaviour
             PopupOrderInit(_result.comp);
             _obj.SetActive(true);
             _popup.rect.localScale = new Vector2(0f, 0f);
-            _popup.SetElements( () => {
+            _popup.GetPEs( () => {
                 _popup.OnOpen();
                 popup_is_opening = false;
                 Result(_result);
@@ -159,9 +162,46 @@ public class PopupMgr : MonoBehaviour
             }
         }
         else Debug.LogError(_type + " 팝업이 초기화되지 않았습니다.");
-
     }
  
+    /// <summary> Get Popup Data. <br/>- Left Pool : Active Object. <br/>- No Left Pool : Instantiate Object. </summary>
+    public static void PoolingPopup<T>() where T : Popup
+    {
+        PopupResult _result;
+        Type _type = typeof(T);
+        
+        void _SetInit(GameObject _obj, Popup _popup)
+        {
+            _result = new PopupResult(_obj, _popup);
+            _popup.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup);
+            PopupOrderInit(_result.comp);
+            _popup.rect.localScale = new Vector2(0f, 0f);
+            _popup.PoolingPEs( () => {
+                Push(_popup);
+                _obj.SetActive(false);
+            });
+        }
+
+        if (popup_pool.ContainsKey(_type))
+        {
+            if ( (!popup_infos[_type].overlapping_able && popup_count_in_scene[_type] == 0) || (popup_infos[_type].overlapping_able) )
+            {
+                Debug.Log("popup_count_in_scene[_type] : " + popup_count_in_scene[_type]);
+                Addressables.InstantiateAsync(popup_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup).Completed += (handle) =>
+                {
+                    _SetInit(handle.Result, handle.Result.GetComponent<T>());
+                    handle.Result.name = "@ " + handle.Result.name;
+                    popup_count_in_scene[_type] ++;
+                };
+            }
+            else
+            {
+                Debug.LogError(_type + " 팝업이 이미 생성 최대치에 도달하였습니다. (중복 생성 불가.)");
+            }
+        }
+        else Debug.LogError(_type + " 팝업이 초기화되지 않았습니다.");
+    }
+
     private static void PopupOrderInit(Popup _comp)
     {
         last_popup_order ++;
@@ -177,7 +217,7 @@ public class PopupMgr : MonoBehaviour
     {
         last_popup_order --;
         popup_pool[_popup.GetType()].Add(_popup);
-        _popup.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup_pool);
+        _popup.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_pool);
     }
 
 }

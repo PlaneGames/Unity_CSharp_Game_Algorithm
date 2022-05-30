@@ -8,6 +8,11 @@ using UnityEditor.IMGUI.Controls;
 using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
 
+/*
+Developer : Jae Young Kwon
+Version : 22.05.30
+*/
+
 namespace Assets.Editor
 { 
     [InitializeOnLoad]
@@ -91,6 +96,64 @@ namespace Assets.Editor
             return windows;
         }
 
+        private static string GetAnchorText(Vector2 _min, Vector2 _max)
+        {
+            var _str_w = "";
+            var _str_h = "";
+            var _str = "";
+            
+            if (_min.x == 0f)
+            {
+                if (_max.x == 0f)
+                    _str_w = "Left";
+                else if (_max.x == 1f)
+                    _str_w = "Stretch";
+                else
+                    _str_w = "Custom";
+            }
+            else if (_min.x == 0.5f)
+            {
+                _str_w = "Center";
+            }
+            else if (_min.x == 1f)
+            {
+                _str_w = "Right";
+            }
+            else
+            {
+                _str_w = "Custom";
+            }
+            
+            if (_min.y == 0f)
+            {
+                if (_max.y == 0f)
+                    _str_h = "Bottom";
+                else if (_max.y == 1f)
+                    _str_h = "Stretch";
+                else
+                    _str_h = "Custom";
+            }
+            else if (_min.y == 0.5f)
+            {
+                _str_h = "Middle";
+            }
+            else if (_min.y == 1f)
+            {
+                _str_h = "Top";
+            }
+            else
+            {
+                _str_w = "Custom";
+            }
+
+            if (_str_w.Equals(_str_h))
+                return _str_w;
+
+            _str = _str_w + " " + _str_h;
+
+            return _str;
+        }
+
         private static void ChangeIcon(GameObject _obj, Texture2D _texture)
         {
             var hierarchyWindows = GetAllHierarchyWindows(true);
@@ -161,7 +224,6 @@ namespace Assets.Editor
         {
             Rect _rect_menu = new Rect(0f, _rect_selection.y, GUILayoutUtility.GetLastRect().width, 16f);
             Rect _rect_menu_icon = new Rect(32f, _rect_selection.y - 1f, 18f, 18f);
-            //Rect _rect_menu_icon = new Rect(_rect_selection.x - 28f, _rect_selection.y - 1f, 18f, 18f);
 
             bool _selected =
                 _rect_menu.Contains(Event.current.mousePosition);
@@ -181,36 +243,25 @@ namespace Assets.Editor
                 GUI.color = _prev_col;
 
                 _obj.SetActive(_btn);
-                /*
-                _is_actived = _obj.activeSelf;
-                string _str_active = "";
-
-                if (_is_actived)
-                    _str_active = "Active FALSE";
-                else
-                    _str_active = "Active TRUE";
-
-                GenericMenu menu = new GenericMenu();
-                AddMenuItem(menu, _str_active, () => { _obj.SetActive(!_is_actived); });
-
-                RectTransform _rt = _obj.GetComponent<RectTransform>();
-                AddMenuItem(menu, "Reset Transform", () => { 
-                    _obj.transform.position   = Vector3.zero;
-                    _obj.transform.localScale = Vector3.one;
-                    _obj.transform.rotation   = Quaternion.identity;
-                    if (_rt != null)
-                    {
-                        _rt.sizeDelta = new Vector2(100f, 100f);
-                        _rt.pivot     = new Vector2(0.5f, 0.5f);
-                        _rt.anchorMin = new Vector2(0.5f, 0.5f);
-                        _rt.anchorMax = new Vector2(0.5f, 0.5f);
-                    }
-                });
-                menu.ShowAsContext();
-                */
             }
         }
-        
+
+        private static void SetAnchorTag(GameObject _obj, Rect _rect)
+        {
+            if (_obj.name.Contains("@ Popup") || _obj.name.Contains("@ UI"))
+            {
+                GUIStyle _style = new GUIStyle();
+                _style.alignment = TextAnchor.MiddleRight;
+                _style.normal.textColor = new Color(1f, 1f, 1f, 0.4f);
+                Rect rect = _rect;
+                rect.width = _rect.width;
+
+                RectTransform _rt = _obj.GetComponent<RectTransform>();
+
+                GUI.Label(rect, GetAnchorText(_rt.anchorMin, _rt.anchorMax), _style);
+            }
+        }
+
         static void AddMenuItem(GenericMenu menu, string menuPath, GenericMenu.MenuFunction func)
         {
             menu.AddItem(new GUIContent(menuPath), false, func);
@@ -225,6 +276,7 @@ namespace Assets.Editor
                 SetObjectMenu(_obj, _id_selection, _rect_selection);
                 SetChangeIcon(_obj);
                 SetNameTag(_obj, _rect_selection);
+                SetAnchorTag(_obj, _rect_selection);
             }
         }
     }
