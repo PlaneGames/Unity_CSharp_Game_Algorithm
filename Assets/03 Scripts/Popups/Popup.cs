@@ -40,31 +40,24 @@ public abstract class Popup : MonoBehaviour
     [HideInInspector] public Image image;
     [HideInInspector] public Sequence seq;
     private bool is_closing;
-    private bool is_loaded;
 
     private List<PopupElement> linked_PEs { get; set; }
 
     public void PoolingPEs(Action Result)
     {
-        SetElements(() => {
-            PushPEs();
-            Debug.Log(linked_PEs.Count);
-            is_loaded = true;
+        SetElements(true, () => {
             Result();
         });
     }
 
     public void GetPEs(Action Result)
     {
-        SetElements(() => {
-            OpenPEs();
-            Debug.Log(linked_PEs.Count);
-            is_loaded = true;
+        SetElements(false, () => {
             Result();
         });
     }
 
-    private void SetElements(Action Result)
+    private void SetElements(bool _is_pooling, Action Result)
     {
         int i;
 
@@ -79,9 +72,18 @@ public abstract class Popup : MonoBehaviour
                 if (_type != null)
                 {
                     PopupElementMgr.GetPE(_type, this, ( Result ) => {
-                        linked_PEs.Add(Result.comp);
-                        Result.comp.SetOrder(canvas.sortingOrder - 1);
                         _un_pushed_list.Remove(0);
+                        if (_is_pooling)
+                        {   
+                            PopupElementMgr.Push(Result.comp);
+                            Result.obj.SetActive(false);
+                        }
+                        else
+                        {
+                            linked_PEs.Add(Result.comp);
+                            Result.comp.SetOrder(canvas.sortingOrder - 1);
+                            Result.comp.OnOpened();
+                        }
                     });
                 }
             }
@@ -104,36 +106,8 @@ public abstract class Popup : MonoBehaviour
         {
             linked_PEs = new List<PopupElement>();
         }
-        if (!is_loaded)
-            StartCoroutine(_push_PEs());
-        else
-            Result();
+        StartCoroutine(_push_PEs());
 
-    }
-
-    private void PushPEs()
-    {
-        if (linked_PEs != null && linked_PEs.Count > 0)
-        {
-            int i;
-            for (i = 0; i < linked_PEs.Count; i ++)
-            {
-                PopupElementMgr.Push(linked_PEs[i]);
-                linked_PEs[i].gameObject.SetActive(false);
-            }
-        }
-    }
-
-    private void OpenPEs()
-    {
-        if (linked_PEs != null && linked_PEs.Count > 0)
-        {
-            int i;
-            for (i = 0; i < linked_PEs.Count; i ++)
-            {
-                linked_PEs[i].OnOpened();
-            }
-        }
     }
 
     public void SetOrderLayer(int _order)
@@ -158,13 +132,13 @@ public abstract class Popup : MonoBehaviour
             return;
 
         CloseElements();
+        PopupMgr.last_popup_order --;
         is_closing = true;
         PopupAniCtr.SetAni(this, close_ani_type, () => 
         {
             PopupMgr.Push(this);
             OnClosed();
             gameObject.SetActive(false);
-            is_loaded = false;
         });
     }
 

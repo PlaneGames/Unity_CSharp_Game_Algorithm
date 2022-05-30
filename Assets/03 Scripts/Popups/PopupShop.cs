@@ -5,7 +5,7 @@ using UnityEngine;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.23
+Version : 22.05.30
 */
 
 public class PopupShop : Popup
@@ -13,7 +13,6 @@ public class PopupShop : Popup
     
     protected override void Init()
     {
-        
     }
 
     protected override void OnOpened()

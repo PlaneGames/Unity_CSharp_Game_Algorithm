@@ -148,7 +148,6 @@ public class PopupMgr : MonoBehaviour
             }
             else if ( (!popup_infos[_type].overlapping_able && popup_count_in_scene[_type] == 0) || (popup_infos[_type].overlapping_able) )
             {
-                Debug.Log("popup_count_in_scene[_type] : " + popup_count_in_scene[_type]);
                 Addressables.InstantiateAsync(popup_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup).Completed += (handle) =>
                 {
                     _SetInit(handle.Result, handle.Result.GetComponent<T>());
@@ -175,6 +174,7 @@ public class PopupMgr : MonoBehaviour
             _result = new PopupResult(_obj, _popup);
             _popup.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup);
             PopupOrderInit(_result.comp);
+            _obj.SetActive(true);
             _popup.rect.localScale = new Vector2(0f, 0f);
             _popup.PoolingPEs( () => {
                 Push(_popup);
@@ -186,7 +186,6 @@ public class PopupMgr : MonoBehaviour
         {
             if ( (!popup_infos[_type].overlapping_able && popup_count_in_scene[_type] == 0) || (popup_infos[_type].overlapping_able) )
             {
-                Debug.Log("popup_count_in_scene[_type] : " + popup_count_in_scene[_type]);
                 Addressables.InstantiateAsync(popup_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup).Completed += (handle) =>
                 {
                     _SetInit(handle.Result, handle.Result.GetComponent<T>());
@@ -215,7 +214,6 @@ public class PopupMgr : MonoBehaviour
 
     public static void Push(Popup _popup)
     {
-        last_popup_order --;
         popup_pool[_popup.GetType()].Add(_popup);
         _popup.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_pool);
     }
