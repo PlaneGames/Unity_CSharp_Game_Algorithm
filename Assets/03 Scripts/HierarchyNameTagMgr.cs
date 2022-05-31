@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+#if UNITY_EDITOR
+
 [Serializable]
 public struct GameObjectNameTag
 {
     public string name;
     public Color BG_col;
     public Color text_col;
-} 
+}
 
 [InitializeOnLoad]
 public class HierarchyNameTagMgr : MonoBehaviour
@@ -46,3 +48,5 @@ public class HierarchyNameTagMgr : MonoBehaviour
         }
     }
 }
+
+#endif

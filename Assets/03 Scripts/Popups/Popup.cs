@@ -43,6 +43,11 @@ public abstract class Popup : MonoBehaviour
 
     private List<PopupElement> linked_PEs { get; set; }
 
+    private void Awake()
+    {
+        rect.localScale = new Vector2(0f, 0f);
+    }
+
     public void PoolingPEs(Action Result)
     {
         SetElements(true, () => {

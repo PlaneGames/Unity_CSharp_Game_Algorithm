@@ -386,6 +386,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20ca2856e373edf4697ce022d89a7816, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pref_loading_ani: {fileID: 100004, guid: aab3513d9620f4d478744a2c0e04fa26, type: 3}
+  obj_loading_ani: {fileID: 0}
+  loading_bar: {fileID: 0}
 --- !u!114 &865624545
 MonoBehaviour:
   m_ObjectHideFlags: 0

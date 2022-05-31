@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 /*
 Developer : Jae Young Kwon
@@ -55,7 +56,7 @@ public class PopupMgr : MonoBehaviour
         Init();
 
         PopupInit<PopupShop>();
-        PopupInit<PopupException>();
+        PopupInit<PopupException>(true);
     }
 
     private void Update()
@@ -164,7 +165,7 @@ public class PopupMgr : MonoBehaviour
     }
  
     /// <summary> Get Popup Data. <br/>- Left Pool : Active Object. <br/>- No Left Pool : Instantiate Object. </summary>
-    public static void PoolingPopup<T>() where T : Popup
+    public static void PoolingPopup<T>(Action Result) where T : Popup
     {
         PopupResult _result;
         Type _type = typeof(T);
@@ -172,13 +173,13 @@ public class PopupMgr : MonoBehaviour
         void _SetInit(GameObject _obj, Popup _popup)
         {
             _result = new PopupResult(_obj, _popup);
-            _popup.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup);
             PopupOrderInit(_result.comp);
             _obj.SetActive(true);
-            _popup.rect.localScale = new Vector2(0f, 0f);
             _popup.PoolingPEs( () => {
                 Push(_popup);
                 _obj.SetActive(false);
+                SceneMgr.LoadingScenePush();
+                Result();
             });
         }
 
@@ -186,6 +187,7 @@ public class PopupMgr : MonoBehaviour
         {
             if ( (!popup_infos[_type].overlapping_able && popup_count_in_scene[_type] == 0) || (popup_infos[_type].overlapping_able) )
             {
+                SceneMgr.LoadingSceneCommit();
                 Addressables.InstantiateAsync(popup_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup).Completed += (handle) =>
                 {
                     _SetInit(handle.Result, handle.Result.GetComponent<T>());

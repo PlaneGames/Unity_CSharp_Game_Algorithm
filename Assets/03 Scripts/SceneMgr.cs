@@ -4,10 +4,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using Sirenix.OdinInspector;
 
 /*
 Developer : Jae Young Kwon
@@ -57,6 +60,12 @@ public class SceneMgr : MonoBehaviour
     private static string canvas_pref_address;
     public static Dictionary<CANVAS_TYPE, CanvasInfo> active_canvas_list;
     public static bool canvas_set_complete;
+    public static int loading_commit_count, loading_pushed_count;
+    public GameObject pref_loading_ani;
+    
+    private GameObject obj_loading_ani;
+    private LoadingBar loading_bar;
+    private Stopwatch watch;
 
     private void Start()
     {
@@ -65,6 +74,9 @@ public class SceneMgr : MonoBehaviour
 
     private void Init()
     {
+        loading_commit_count = 0;
+        loading_pushed_count = 0;
+
         canvas_set_complete = false;
 
         canvas_pref_address = "Canvas";
@@ -72,11 +84,61 @@ public class SceneMgr : MonoBehaviour
         active_canvas_list = null;
         active_canvas_list = new Dictionary<CANVAS_TYPE, CanvasInfo>();
 
-        GenCanvas(CANVAS_TYPE.EXPAND, ( CanvasInfo Result ) => 
+        // 씬에 풀링 또는 초기 생성 요소들은 모두 로딩에 Commit됨.
+        GenCanvas(CANVAS_TYPE.EXPAND, ( CanvasInfo Result ) =>
         {
+            obj_loading_ani = Instantiate(pref_loading_ani, active_canvas_list[CANVAS_TYPE.EXPAND].trans) as GameObject;
+            loading_bar = obj_loading_ani.GetComponent<LoadingBar>();
             canvas_set_complete = true;
-            PopupMgr.PoolingPopup<PopupShop>();
+            watch = new Stopwatch();
+            watch.Start();
+            PopupMgr.PoolingPopup<PopupShop>(() => {});
+            StartCoroutine(LoadingProgress(5));
+            //StartCoroutine(CheckLoadingComplete());
         });
+    }
+
+    public void OnOpenPopupShop()
+    {
+        PopupMgr.GetPopup<PopupShop>();
+    }
+
+    public void OnOpenPopupException()
+    {
+        PopupMgr.GetPopup<PopupException>();
+    }
+
+    IEnumerator LoadingProgress(int _multi_tunnel_count)
+    {
+        for (int i = 0; i < 1000 / _multi_tunnel_count; i ++)
+        {
+            bool _commited = false;
+            while (true)
+            {
+                if (!_commited)
+                {
+                    _commited = true;
+                    for (int j = 0; j < _multi_tunnel_count; j ++)
+                    {
+                        PopupMgr.PoolingPopup<PopupException>(() => {});
+                    }
+                }
+
+                if (loading_pushed_count == loading_commit_count)
+                {
+                    loading_bar.bar_guage.sizeDelta = new Vector2(160f * (loading_pushed_count / 1001f), 16f);
+                    loading_bar.bar_text.text = (loading_pushed_count / 1002f * 100f).ToString() + " %";
+                    loading_bar.bar_text_2.text = (loading_pushed_count).ToString() + " / " + 1002;
+                    break;
+                }
+                else
+                    yield return null;
+            }
+        }
+        yield return null;
+        watch.Stop();
+        loading_bar.bar_text_2.text = "Loaded In " + watch.ElapsedMilliseconds+"ms.";
+        //Destroy(obj_loading_ani);
     }
 
     public static void GetCanvas(CANVAS_TYPE _type, Action<CanvasInfo> Result)
@@ -93,6 +155,7 @@ public class SceneMgr : MonoBehaviour
 
     public static void GenCanvas(CANVAS_TYPE _type, Action<CanvasInfo> Result)
     {
+        LoadingSceneCommit();
         CanvasInfo _info = new CanvasInfo();
         Addressables.InstantiateAsync(canvas_pref_address).Completed += (handle) =>
         {
@@ -102,6 +165,7 @@ public class SceneMgr : MonoBehaviour
                           _obj.transform, _obj.transform.GetChild(0), _obj.transform.GetChild(1));
             SetCanvasScaleType(_type, _info);
             active_canvas_list.Add(_type, _info);
+            LoadingScenePush();
             Result(_info);
         };
     }
@@ -156,6 +220,30 @@ public class SceneMgr : MonoBehaviour
     public static void SetCustomCanvasScale(CanvasScaler _canv_s, float _match_value)
     {
         _canv_s.matchWidthOrHeight = _match_value;
+    }
+
+    public static void LoadingSceneCommit()
+    {
+        loading_commit_count ++;
+    }
+
+    public static void LoadingScenePush()
+    {
+        loading_pushed_count ++;
+    }
+
+    private IEnumerator CheckLoadingComplete()
+    {
+        yield return new WaitForEndOfFrame();
+        while (true)
+        {
+            if (loading_pushed_count == loading_commit_count)
+            {
+                break;
+            }
+            
+            yield return null;
+        }
     }
 
 }
