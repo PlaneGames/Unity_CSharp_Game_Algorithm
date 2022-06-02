@@ -13,7 +13,6 @@ public class PopupException : Popup
 
     protected override void Init()
     {
-
     }
 
     protected override void OnOpened()

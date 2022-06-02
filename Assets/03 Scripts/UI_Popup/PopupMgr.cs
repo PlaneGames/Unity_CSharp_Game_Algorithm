@@ -18,6 +18,7 @@ public struct PopupInfo
 { 
     public string pref_address;  
     public bool overlapping_able;
+    public bool ordering_able;
 } 
 
 public struct PopupResult
@@ -56,18 +57,23 @@ public class PopupMgr : MonoBehaviour
         Init();
 
         PopupInit<PopupShop>();
-        PopupInit<PopupException>(true);
+        PopupInit<PopupException>(true, true);
+        PopupInit<PopupToast>(false);
     }
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             GetPopup<PopupShop>();
         }
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.W))
         {
             GetPopup<PopupException>();
+        }        
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            GetPopup<PopupToast>();
         }
     }
     
@@ -89,15 +95,22 @@ public class PopupMgr : MonoBehaviour
     /// <summary> Initialize The Popup. <br/>Create The GameObject In The Current Scene. </summary>
     public static void PopupInit<T>()
     {
-        PopupInit<T>(false);
+        PopupInit<T>(false, true);
     }
 
     /// <summary> Initialize The Popup. <br/>Create The GameObject In The Current Scene. </summary>
-    public static void PopupInit<T>(bool _overlapping_able)
+    public static void PopupInit<T>(bool _order_able)
+    {
+        PopupInit<T>(false, _order_able);
+    }
+
+    /// <summary> Initialize The Popup. <br/>Create The GameObject In The Current Scene. </summary>
+    public static void PopupInit<T>(bool _overlapping_able, bool _order_able)
     {
         PopupInfo _info;
         _info.pref_address = typeof(T).ToString();
         _info.overlapping_able = _overlapping_able;
+        _info.ordering_able = _order_able;
 
         if (!popup_infos.ContainsKey(typeof(T)))
         {
@@ -131,7 +144,11 @@ public class PopupMgr : MonoBehaviour
         {
             _result = new PopupResult(_obj, _popup);
             _popup.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup);
-            PopupOrderInit(_result.comp);
+            if (popup_infos[_type].ordering_able)
+            {
+                PopupOrderInit(_result.comp);
+            }
+            PopupMgr.Pop(_result.comp);
             _obj.SetActive(true);
             _popup.rect.localScale = new Vector2(0f, 0f);
             _popup.GetPEs( () => {
@@ -173,7 +190,6 @@ public class PopupMgr : MonoBehaviour
         void _SetInit(GameObject _obj, Popup _popup)
         {
             _result = new PopupResult(_obj, _popup);
-            PopupOrderInit(_result.comp);
             _obj.SetActive(true);
             _popup.PoolingPEs( () => {
                 Push(_popup);
@@ -207,6 +223,12 @@ public class PopupMgr : MonoBehaviour
     {
         last_popup_order ++;
         _comp.SetOrderLayer(last_popup_order * gap_between_order);
+    }
+
+    public static void PopupOrderPop(Popup _comp)
+    {
+        if (popup_infos[_comp.GetType()].ordering_able)
+            last_popup_order --;
     }
 
     public static void Pop(Popup _popup)

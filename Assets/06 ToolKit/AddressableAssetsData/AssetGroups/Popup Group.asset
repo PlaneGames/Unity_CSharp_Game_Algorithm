@@ -29,6 +29,10 @@ MonoBehaviour:
     m_Address: PopupException
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: dddc5c0840e6ac84bbcc87b1b2c23c50
+    m_Address: PopupToast
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bc4e2c821e9b5c04997bf54e3d40930b, type: 2}
   m_SchemaSet:

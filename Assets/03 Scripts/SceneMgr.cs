@@ -110,7 +110,7 @@ public class SceneMgr : MonoBehaviour
 
     IEnumerator LoadingProgress(int _multi_tunnel_count)
     {
-        for (int i = 0; i < 1000 / _multi_tunnel_count; i ++)
+        for (int i = 0; i < 5 / _multi_tunnel_count; i ++)
         {
             bool _commited = false;
             while (true)

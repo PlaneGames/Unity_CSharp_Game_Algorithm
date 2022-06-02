@@ -12,15 +12,6 @@ Developer : Jae Young Kwon
 Version : 22.05.23
 */
 
-public enum POPUP_ANI
-{
-    OPEN_CLOSEUP,
-    OPEN_FADEIN,
-
-    CLOSE_GETAWAY,
-    CLOSE_FADEOUT,
-}
-
 public struct LinkToPEInfo
 {
     public PopupElement PE;
@@ -124,7 +115,6 @@ public abstract class Popup : MonoBehaviour
     {
         Init();
         is_closing = false;
-        PopupMgr.Pop(this);
         PopupAniCtr.SetAni(this, open_ani_type, () => 
         {
             OnOpened(); 
@@ -137,7 +127,7 @@ public abstract class Popup : MonoBehaviour
             return;
 
         CloseElements();
-        PopupMgr.last_popup_order --;
+        PopupMgr.PopupOrderPop(this);
         is_closing = true;
         PopupAniCtr.SetAni(this, close_ani_type, () => 
         {

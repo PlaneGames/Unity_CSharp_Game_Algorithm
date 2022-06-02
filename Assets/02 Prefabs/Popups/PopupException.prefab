@@ -340,7 +340,7 @@ MonoBehaviour:
   canvas: {fileID: 4418062016506007834}
   rect: {fileID: 6056813037503526703}
   open_ani_type: 0
-  close_ani_type: 2
+  close_ani_type: 3
   popup_elements_to_link: 00000000
   image: {fileID: 0}
 --- !u!223 &4418062016506007834
@@ -380,7 +380,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
 --- !u!1 &6561425193980182892
 GameObject:
   m_ObjectHideFlags: 0

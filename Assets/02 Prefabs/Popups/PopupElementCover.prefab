@@ -115,7 +115,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
 --- !u!114 &-3874214025954547138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,4 +132,4 @@ MonoBehaviour:
   rect: {fileID: 4257976476350887141}
   image: {fileID: 0}
   open_ani_type: 1
-  close_ani_type: 3
+  close_ani_type: 4
