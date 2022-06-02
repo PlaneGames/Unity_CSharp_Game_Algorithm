@@ -92,8 +92,8 @@ public class SceneMgr : MonoBehaviour
             canvas_set_complete = true;
             watch = new Stopwatch();
             watch.Start();
-            PopupMgr.PoolingPopup<PopupShop>(() => {});
-            StartCoroutine(LoadingProgress(5));
+            //PopupMgr.PoolingPopup<PopupShop>(() => {});
+            StartCoroutine(LoadingProgress(1));
             //StartCoroutine(CheckLoadingComplete());
         });
     }
@@ -110,7 +110,8 @@ public class SceneMgr : MonoBehaviour
 
     IEnumerator LoadingProgress(int _multi_tunnel_count)
     {
-        for (int i = 0; i < 5 / _multi_tunnel_count; i ++)
+        var _loading_resource_count = 10;
+        for (int i = 0; i < _loading_resource_count / _multi_tunnel_count; i ++)
         {
             bool _commited = false;
             while (true)
@@ -126,9 +127,9 @@ public class SceneMgr : MonoBehaviour
 
                 if (loading_pushed_count == loading_commit_count)
                 {
-                    loading_bar.bar_guage.sizeDelta = new Vector2(160f * (loading_pushed_count / 1001f), 16f);
-                    loading_bar.bar_text.text = (loading_pushed_count / 1002f * 100f).ToString() + " %";
-                    loading_bar.bar_text_2.text = (loading_pushed_count).ToString() + " / " + 1002;
+                    loading_bar.bar_guage.sizeDelta = new Vector2(160f * (loading_pushed_count / (float)_loading_resource_count), 16f);
+                    loading_bar.bar_text.text = (loading_pushed_count / (float)_loading_resource_count * 100f).ToString() + " %";
+                    loading_bar.bar_text_2.text = (loading_pushed_count).ToString() + " / " + (float)_loading_resource_count;
                     break;
                 }
                 else
