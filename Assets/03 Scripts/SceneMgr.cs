@@ -14,7 +14,7 @@ using Sirenix.OdinInspector;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.19
+Version : 22.06.03
 */
 
 public enum CANVAS_TYPE
@@ -25,6 +25,12 @@ public enum CANVAS_TYPE
     MATCH_CUSTOM,
     EXPAND,
     SHRINK,
+}
+
+public struct Pool_Info
+{
+    public Type type;
+    public int num;
 }
 
 public struct CanvasInfo
@@ -62,6 +68,7 @@ public class SceneMgr : MonoBehaviour
     public static bool canvas_set_complete;
     public static int loading_commit_count, loading_pushed_count;
     public GameObject pref_loading_ani;
+    public static List<Type> pooling_list;
     
     private GameObject obj_loading_ani;
     private LoadingBar loading_bar;
@@ -77,12 +84,16 @@ public class SceneMgr : MonoBehaviour
         loading_commit_count = 0;
         loading_pushed_count = 0;
 
+        pooling_list = new List<Type>();
+
         canvas_set_complete = false;
 
         canvas_pref_address = "Canvas";
 
         active_canvas_list = null;
         active_canvas_list = new Dictionary<CANVAS_TYPE, CanvasInfo>();
+
+        InitSceneUI(typeof(PopupShop), 115);
 
         // 씬에 풀링 또는 초기 생성 요소들은 모두 로딩에 Commit됨.
         GenCanvas(CANVAS_TYPE.EXPAND, ( CanvasInfo Result ) =>
@@ -92,16 +103,31 @@ public class SceneMgr : MonoBehaviour
             canvas_set_complete = true;
             watch = new Stopwatch();
             watch.Start();
-            //PopupMgr.PoolingPopup<PopupShop>(() => {});
+            PopupMgr.PoolingPopup<PopupShop>(() => {});
+            
             StartCoroutine(LoadingProgress(1));
             //StartCoroutine(CheckLoadingComplete());
         });
     }
 
+    public void InitSceneUI(Type _type, int _num)
+    {
+        if (_num > 0)
+        {
+            for (int i = 0; i < _num; i ++)
+            {
+                pooling_list.Add(_type);
+            }
+        }
+        else
+            UnityEngine.Debug.LogError( "씬 초기화 갯수는 0개 이상이어야 합니다." );
+        UnityEngine.Debug.Log( _type.BaseType == typeof(Popup) );
+    }
+
     public void OnOpenPopupShop()
     {
         PopupMgr.GetPopup<PopupShop>();
-    }
+    } 
 
     public void OnOpenPopupException()
     {
@@ -110,36 +136,54 @@ public class SceneMgr : MonoBehaviour
 
     IEnumerator LoadingProgress(int _multi_tunnel_count)
     {
-        var _loading_resource_count = 10;
-        for (int i = 0; i < _loading_resource_count / _multi_tunnel_count; i ++)
+        // Canvas 외에 다른 UI 요소가 pooling_list에 있을 경우, Canvas를 모두 로딩한 후, 다른 요소들을 로딩해야함.
+        // 진행중인 ID 열에 포함된 모든 오브젝트들이 정상적으로 불러와졌을 경우에 다음 ID로 넘어감.
+
+        if (_multi_tunnel_count > 0)
         {
-            bool _commited = false;
+            int i, j;
+            int _left_count = pooling_list.Count;
+
             while (true)
             {
-                if (!_commited)
+                UnityEngine.Debug.Log("while (true)");
+                int _left_tunnel = _multi_tunnel_count;
+                bool _commited = false;
+                while (true)
                 {
-                    _commited = true;
-                    for (int j = 0; j < _multi_tunnel_count; j ++)
+                    if (!_commited)
                     {
-                        PopupMgr.PoolingPopup<PopupException>(() => {});
+                        _commited = true;
+                        for (j = 0; j < _multi_tunnel_count; j ++)
+                        {
+                            PopupMgr.PoolingPopup<PopupException>(() => {
+                                _left_tunnel --;
+                                _left_count --;
+                            });
+                        }
                     }
-                }
 
-                if (loading_pushed_count == loading_commit_count)
+                    if (_left_count == 0)
+                    {
+                        break;
+                    }
+                    if (_left_tunnel == 0)
+                    {
+                        break;
+                    }
+                    yield return null;
+                }
+                if (_left_count == 0)
                 {
-                    loading_bar.bar_guage.sizeDelta = new Vector2(160f * (loading_pushed_count / (float)_loading_resource_count), 16f);
-                    loading_bar.bar_text.text = (loading_pushed_count / (float)_loading_resource_count * 100f).ToString() + " %";
-                    loading_bar.bar_text_2.text = (loading_pushed_count).ToString() + " / " + (float)_loading_resource_count;
                     break;
                 }
-                else
-                    yield return null;
+                yield return null;
             }
+
+            yield return null;
+            watch.Stop();
+            loading_bar.bar_text_2.text = "Loaded In " + watch.ElapsedMilliseconds+"ms.";
         }
-        yield return null;
-        watch.Stop();
-        loading_bar.bar_text_2.text = "Loaded In " + watch.ElapsedMilliseconds+"ms.";
-        //Destroy(obj_loading_ani);
     }
 
     public static void GetCanvas(CANVAS_TYPE _type, Action<CanvasInfo> Result)

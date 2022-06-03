@@ -67,20 +67,23 @@ public abstract class Popup : MonoBehaviour
                 Type _type = Type.GetType(popup_elements_to_link[i].ToString());
                 if (_type != null)
                 {
-                    PopupElementMgr.GetPE(_type, this, ( Result ) => {
-                        _un_pushed_list.Remove(0);
-                        if (_is_pooling)
-                        {   
-                            PopupElementMgr.Push(Result.comp);
-                            Result.obj.SetActive(false);
-                        }
-                        else
+                    if (_is_pooling)
+                    {
+                        PopupElementMgr.PoolingPE(_type, this, ( Result ) => 
                         {
+                            _un_pushed_list.Remove(0);
+                        });
+                    }
+                    else
+                    {
+                        PopupElementMgr.GetPE(_type, this, ( Result ) => 
+                        {
+                            _un_pushed_list.Remove(0);
                             linked_PEs.Add(Result.comp);
                             Result.comp.SetOrder(canvas.sortingOrder - 1);
                             Result.comp.OnOpened();
-                        }
-                    });
+                        });
+                    }
                 }
             }
             

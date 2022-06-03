@@ -11,7 +11,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.30
+Version : 22.06.03
 */
 
 public enum PE_NAME
@@ -91,6 +91,8 @@ public class PopupElementMgr : MonoBehaviour
         {
             _result = new PopupElementResult(_obj, _pe);
             _obj.transform.SetParent(_popup.transform);
+            PopupElementMgr.Pop(_pe);
+            _obj.SetActive(true);
             Result(_result);
         }
 
@@ -105,20 +107,55 @@ public class PopupElementMgr : MonoBehaviour
                 Addressables.InstantiateAsync(PE_infos[_type].pref_address, _popup.transform).Completed += (handle) =>
                 {
                     _SetInit(handle.Result, handle.Result.GetComponent<T>());
-                    handle.Result.name = "@ " + handle.Result.name;
+                    NameTagCtr.SetUIName(handle.Result);
                 };
             }
         }
+        else Debug.LogError(_type + " 팝업이 초기화되지 않았습니다.");
+    }
+
+    public static void PoolingPE(Type _type, Popup _popup, Action<PopupElementResult> Result)
+    {
+        MethodInfo get_pe = typeof(PopupElementMgr).GetMethod("PoolingPE", new Type[] { typeof(Popup), typeof(Action<PopupElementResult>) } );
+        get_pe = get_pe.MakeGenericMethod(_type);
+        get_pe.Invoke(null, new object[] { _popup, Result });
+    }
+
+    /// <summary> Get Popup Element Data. <br/>- Left Pool : Active Object. <br/>- No Left Pool : Instantiate Object. </summary>
+    public static void PoolingPE<T>(Popup _popup, Action<PopupElementResult> Result) where T : PopupElement
+    {
+        PopupElementResult _result;
+        Type _type = typeof(T);
+
+        void _SetInit(GameObject _obj, PopupElement _pe)
+        {
+            _result = new PopupElementResult(_obj, _pe);
+            Push(_pe);
+            _obj.SetActive(false);
+            Result(_result);
+        }
+
+        if (PE_pool.ContainsKey(_type))
+        {
+            Addressables.InstantiateAsync(PE_infos[_type].pref_address, _popup.transform).Completed += (handle) =>
+            {
+                _SetInit(handle.Result, handle.Result.GetComponent<T>());
+                NameTagCtr.SetUIName(handle.Result);
+            };
+        }
+        else Debug.LogError(_type + " 팝업이 초기화되지 않았습니다.");
     }
 
     public static void Pop(PopupElement _pe)
     {
         PE_pool[_pe.GetType()].Remove(_pe);
+        Debug.Log(PE_pool[_pe.GetType()].Count);
     }
 
     public static void Push(PopupElement _pe)
     {
         PE_pool[_pe.GetType()].Add(_pe);
+        Debug.Log(PE_pool[_pe.GetType()].Count);
         _pe.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_pool);
     }
 

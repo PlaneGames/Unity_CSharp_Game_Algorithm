@@ -11,7 +11,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.31
+Version : 22.06.03
 */
 
 public struct GUIInfo
@@ -92,7 +92,7 @@ public class GUIMgr : MonoBehaviour
             Addressables.InstantiateAsync(GUI_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup).Completed += (handle) =>
             {
                 _SetInit(handle.Result, handle.Result.GetComponent<T>());
-                handle.Result.name = "@ " + handle.Result.name;
+                NameTagCtr.SetUIName(handle.Result);
                 GUI_count_in_scene[_type] ++;
             };
         }

@@ -28,8 +28,6 @@ public abstract class PopupElement : MonoBehaviour
 
     public void OnOpened()
     {
-        PopupElementMgr.Pop(this);
-        gameObject.SetActive(true);
         PopupAniCtr.SetAni(this, open_ani_type, () => {});
     }
 

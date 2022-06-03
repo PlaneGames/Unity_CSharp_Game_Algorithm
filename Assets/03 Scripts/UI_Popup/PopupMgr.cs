@@ -11,7 +11,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.05.30
+Version : 22.06.03
 */
 
 public struct PopupInfo
@@ -169,7 +169,7 @@ public class PopupMgr : MonoBehaviour
                 Addressables.InstantiateAsync(popup_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup).Completed += (handle) =>
                 {
                     _SetInit(handle.Result, handle.Result.GetComponent<T>());
-                    handle.Result.name = "@ " + handle.Result.name;
+                    NameTagCtr.SetUIName(handle.Result);
                     popup_count_in_scene[_type] ++;
                 };
             }
@@ -180,7 +180,14 @@ public class PopupMgr : MonoBehaviour
         }
         else Debug.LogError(_type + " 팝업이 초기화되지 않았습니다.");
     }
- 
+
+    public static void PoolingPopup(Type _type, Action<PopupElementResult> Result)
+    {
+        MethodInfo get_pe = typeof(PopupElementMgr).GetMethod("PoolingPopup", new Type[] { typeof(Action) } );
+        get_pe = get_pe.MakeGenericMethod(_type);
+        get_pe.Invoke(null, new object[] { Result });
+    }
+
     /// <summary> Get Popup Data. <br/>- Left Pool : Active Object. <br/>- No Left Pool : Instantiate Object. </summary>
     public static void PoolingPopup<T>(Action Result) where T : Popup
     {
@@ -207,7 +214,7 @@ public class PopupMgr : MonoBehaviour
                 Addressables.InstantiateAsync(popup_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup).Completed += (handle) =>
                 {
                     _SetInit(handle.Result, handle.Result.GetComponent<T>());
-                    handle.Result.name = "@ " + handle.Result.name;
+                    NameTagCtr.SetUIName(handle.Result);
                     popup_count_in_scene[_type] ++;
                 };
             }
