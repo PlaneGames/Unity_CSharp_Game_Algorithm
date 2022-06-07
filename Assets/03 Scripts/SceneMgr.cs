@@ -105,7 +105,7 @@ public class SceneMgr : MonoBehaviour
             watch.Start();
             PopupMgr.PoolingPopup<PopupShop>(() => {});
             
-            StartCoroutine(LoadingProgress(1));
+            StartCoroutine(LoadingProgress(5));
             //StartCoroutine(CheckLoadingComplete());
         });
     }
@@ -121,7 +121,7 @@ public class SceneMgr : MonoBehaviour
         }
         else
             UnityEngine.Debug.LogError( "씬 초기화 갯수는 0개 이상이어야 합니다." );
-        UnityEngine.Debug.Log( _type.BaseType == typeof(Popup) );
+        //UnityEngine.Debug.Log( _type.BaseType == typeof(Popup) );
     }
 
     public void OnOpenPopupShop()
@@ -138,7 +138,11 @@ public class SceneMgr : MonoBehaviour
     {
         // Canvas 외에 다른 UI 요소가 pooling_list에 있을 경우, Canvas를 모두 로딩한 후, 다른 요소들을 로딩해야함.
         // 진행중인 ID 열에 포함된 모든 오브젝트들이 정상적으로 불러와졌을 경우에 다음 ID로 넘어감.
-
+        float _GetPer(int _left)
+        {
+            return (float)(pooling_list.Count - _left) / (float)pooling_list.Count;
+        }
+        
         if (_multi_tunnel_count > 0)
         {
             int i, j;
@@ -156,12 +160,20 @@ public class SceneMgr : MonoBehaviour
                         _commited = true;
                         for (j = 0; j < _multi_tunnel_count; j ++)
                         {
+                            PopupMgr.PoolingPopup(pooling_list[_left_count - 1], ( Result ) => {
+                                _left_tunnel --;
+                                _left_count --;
+                            });
+
                             PopupMgr.PoolingPopup<PopupException>(() => {
                                 _left_tunnel --;
                                 _left_count --;
                             });
                         }
                     }
+
+                    loading_bar.bar_guage.sizeDelta = new Vector2(_GetPer(_left_count) * 160f, 16f);
+                    loading_bar.bar_text.text = ((int)(_GetPer(_left_count) * 100f)).ToString() + " %";
 
                     if (_left_count == 0)
                     {
