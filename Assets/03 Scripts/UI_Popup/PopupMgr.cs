@@ -181,13 +181,6 @@ public class PopupMgr : MonoBehaviour
         else Debug.LogError(_type + " 팝업이 초기화되지 않았습니다.");
     }
 
-    public static void PoolingPopup(Type _type, Action<PopupElementResult> Result)
-    {
-        MethodInfo get_pe = typeof(PopupElementMgr).GetMethod("PoolingPopup", new Type[] { typeof(Action) } );
-        get_pe = get_pe.MakeGenericMethod(_type);
-        get_pe.Invoke(null, new object[] { Result });
-    }
-
     /// <summary> Get Popup Data. <br/>- Left Pool : Active Object. <br/>- No Left Pool : Instantiate Object. </summary>
     public static void PoolingPopup<T>(Action Result) where T : Popup
     {
@@ -224,6 +217,13 @@ public class PopupMgr : MonoBehaviour
             }
         }
         else Debug.LogError(_type + " 팝업이 초기화되지 않았습니다.");
+    }
+
+    public static void PoolingPopup(Type _type, Action Result)
+    {
+        MethodInfo get_pe = typeof(PopupMgr).GetMethod("PoolingPopup", new Type[] { typeof(Action) } );
+        get_pe = get_pe.MakeGenericMethod(_type);
+        get_pe.Invoke(null, new object[] { Result });
     }
 
     private static void PopupOrderInit(Popup _comp)

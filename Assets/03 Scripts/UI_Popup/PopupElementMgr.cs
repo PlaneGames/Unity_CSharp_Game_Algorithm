@@ -149,13 +149,13 @@ public class PopupElementMgr : MonoBehaviour
     public static void Pop(PopupElement _pe)
     {
         PE_pool[_pe.GetType()].Remove(_pe);
-        Debug.Log(PE_pool[_pe.GetType()].Count);
+        //Debug.Log(PE_pool[_pe.GetType()].Count);
     }
 
     public static void Push(PopupElement _pe)
     {
         PE_pool[_pe.GetType()].Add(_pe);
-        Debug.Log(PE_pool[_pe.GetType()].Count);
+        //Debug.Log(PE_pool[_pe.GetType()].Count);
         _pe.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_pool);
     }
 

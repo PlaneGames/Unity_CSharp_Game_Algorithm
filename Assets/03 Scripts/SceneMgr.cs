@@ -93,7 +93,9 @@ public class SceneMgr : MonoBehaviour
         active_canvas_list = null;
         active_canvas_list = new Dictionary<CANVAS_TYPE, CanvasInfo>();
 
-        InitSceneUI(typeof(PopupShop), 115);
+        InitSceneUI(typeof(PopupException), 1);
+        InitSceneUI(typeof(PopupShop), 1);
+        InitSceneUI(typeof(PopupException), 20);
 
         // 씬에 풀링 또는 초기 생성 요소들은 모두 로딩에 Commit됨.
         GenCanvas(CANVAS_TYPE.EXPAND, ( CanvasInfo Result ) =>
@@ -101,12 +103,7 @@ public class SceneMgr : MonoBehaviour
             obj_loading_ani = Instantiate(pref_loading_ani, active_canvas_list[CANVAS_TYPE.EXPAND].trans) as GameObject;
             loading_bar = obj_loading_ani.GetComponent<LoadingBar>();
             canvas_set_complete = true;
-            watch = new Stopwatch();
-            watch.Start();
-            PopupMgr.PoolingPopup<PopupShop>(() => {});
-            
-            StartCoroutine(LoadingProgress(5));
-            //StartCoroutine(CheckLoadingComplete());
+            StartCoroutine(LoadingProgress(15));
         });
     }
 
@@ -136,21 +133,23 @@ public class SceneMgr : MonoBehaviour
 
     IEnumerator LoadingProgress(int _multi_tunnel_count)
     {
-        // Canvas 외에 다른 UI 요소가 pooling_list에 있을 경우, Canvas를 모두 로딩한 후, 다른 요소들을 로딩해야함.
-        // 진행중인 ID 열에 포함된 모든 오브젝트들이 정상적으로 불러와졌을 경우에 다음 ID로 넘어감.
         float _GetPer(int _left)
         {
             return (float)(pooling_list.Count - _left) / (float)pooling_list.Count;
         }
-        
+
+        watch = new Stopwatch();
+        watch.Start();
+
         if (_multi_tunnel_count > 0)
         {
-            int i, j;
+            int i;
             int _left_count = pooling_list.Count;
+            int _load_id = _left_count;
+            int _load_display = 0;
 
             while (true)
             {
-                UnityEngine.Debug.Log("while (true)");
                 int _left_tunnel = _multi_tunnel_count;
                 bool _commited = false;
                 while (true)
@@ -158,22 +157,25 @@ public class SceneMgr : MonoBehaviour
                     if (!_commited)
                     {
                         _commited = true;
-                        for (j = 0; j < _multi_tunnel_count; j ++)
+                        for (i = 0; i < _multi_tunnel_count; i ++)
                         {
-                            PopupMgr.PoolingPopup(pooling_list[_left_count - 1], ( Result ) => {
+                            _load_id --;
+                            // if (pooling_list[_load_id].BaseType == typeof(Popup))
+                            PopupMgr.PoolingPopup(pooling_list[_load_id], () => {
                                 _left_tunnel --;
                                 _left_count --;
                             });
-
-                            PopupMgr.PoolingPopup<PopupException>(() => {
-                                _left_tunnel --;
-                                _left_count --;
-                            });
+                            if (_load_id == 0)
+                            {
+                                break;
+                            }
                         }
                     }
 
-                    loading_bar.bar_guage.sizeDelta = new Vector2(_GetPer(_left_count) * 160f, 16f);
+                    loading_bar.bar_guage.sizeDelta = Vector2.Lerp(loading_bar.bar_guage.sizeDelta, new Vector2(_GetPer(_left_count) * 160f, 16f), 0.2f);
                     loading_bar.bar_text.text = ((int)(_GetPer(_left_count) * 100f)).ToString() + " %";
+                    _load_display = (int)Mathf.Lerp(_load_display, pooling_list.Count - _left_count, 0.2f);
+                    loading_bar.bar_text_2.text = _load_display + " / " + pooling_list.Count;
 
                     if (_left_count == 0)
                     {
@@ -191,10 +193,9 @@ public class SceneMgr : MonoBehaviour
                 }
                 yield return null;
             }
-
-            yield return null;
             watch.Stop();
             loading_bar.bar_text_2.text = "Loaded In " + watch.ElapsedMilliseconds+"ms.";
+            yield return null;
         }
     }
 
