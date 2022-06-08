@@ -11,7 +11,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.06.03
+Version : 22.06.08
 */
 
 public struct GUIInfo
@@ -33,7 +33,6 @@ public struct GUIResult
 
 public class GUIMgr : MonoBehaviour
 {
-
     public static Dictionary<Type, GUIInfo> GUI_infos;
     public static Dictionary<Type, List<UI_GUI>> GUI_pool;
     public static Dictionary<Type, int> GUI_count_in_scene;
@@ -44,6 +43,9 @@ public class GUIMgr : MonoBehaviour
     private void Start()
     {
         Init();
+
+        GUIInit<GUIShopBtn>();
+        GUIInit<GUIExceptionBtn>();
     }
 
     private void Init()
@@ -76,6 +78,11 @@ public class GUIMgr : MonoBehaviour
             Debug.LogError(_info.pref_address + "GUI가 중복으로 초기화되었습니다.");
     }
 
+    public static void GetGUI<T>() where T : UI_GUI
+    {
+        GetGUI<T>( (Result) => {} );
+    }
+
     public static void GetGUI<T>(Action<GUIResult> Result) where T : UI_GUI
     {
         GUIResult _result;
@@ -84,12 +91,13 @@ public class GUIMgr : MonoBehaviour
         void _SetInit(GameObject _obj, UI_GUI _GUI)
         {
             _result = new GUIResult(_obj, _GUI);
+            _GUI.OnOpen();
             Result(_result);
         }
 
         if (GUI_infos.ContainsKey(_type))
         {
-            Addressables.InstantiateAsync(GUI_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_popup).Completed += (handle) =>
+            Addressables.InstantiateAsync(GUI_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_GUI).Completed += (handle) =>
             {
                 _SetInit(handle.Result, handle.Result.GetComponent<T>());
                 NameTagCtr.SetUIName(handle.Result);
@@ -97,6 +105,47 @@ public class GUIMgr : MonoBehaviour
             };
         }
         else Debug.LogError(_type + " GUI가 초기화되지 않았습니다.");
+    }
+
+    public static void PoolingGUI<T>(Action Result) where T : UI_GUI
+    {
+        Type _type = typeof(T);
+        
+        void _SetInit(GameObject _obj, UI_GUI _GUI)
+        {
+            _obj.SetActive(false);
+            Push(_GUI);
+            Result();
+        }
+
+        if (GUI_infos.ContainsKey(_type))
+        {
+            Addressables.InstantiateAsync(GUI_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_GUI).Completed += (handle) =>
+            {
+                _SetInit(handle.Result, handle.Result.GetComponent<T>());
+                NameTagCtr.SetUIName(handle.Result);
+                GUI_count_in_scene[_type] ++;
+            };
+        }
+        else Debug.LogError(_type + " GUI가 초기화되지 않았습니다.");
+    }
+
+    public static void PoolingGUI(Type _type, Action Result)
+    {
+        MethodInfo get_pe = typeof(GUIMgr).GetMethod("PoolingGUI", new Type[] { typeof(Action) } );
+        get_pe = get_pe.MakeGenericMethod(_type);
+        get_pe.Invoke(null, new object[] { Result });
+    }
+
+    public static void Pop(UI_GUI _GUI)
+    {
+        GUI_pool[_GUI.GetType()].Remove(_GUI);
+    }
+
+    public static void Push(UI_GUI _GUI)
+    {
+        GUI_pool[_GUI.GetType()].Add(_GUI);
+        _GUI.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_pool);
     }
 
 }

@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -35, y: -25}
+  m_AnchoredPosition: {x: -20, y: -25}
   m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.2}
 --- !u!222 &22200000
@@ -195,7 +195,7 @@ GameObject:
   - component: {fileID: 22400004}
   - component: {fileID: 4344051939733998969}
   m_Layer: 0
-  m_Name: Pickaxe 3
+  m_Name: LoadingBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -273,7 +273,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 160, y: 16}
+  m_SizeDelta: {x: 160, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &407070310802411035
 CanvasRenderer:
@@ -545,7 +545,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: -30, y: 0}
-  m_SizeDelta: {x: 0, y: 16}
+  m_SizeDelta: {x: 0, y: 12}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &7202754077745911706
 CanvasRenderer:

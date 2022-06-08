@@ -1,20 +1,15 @@
 using System;
-using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Diagnostics;
 
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using Sirenix.OdinInspector;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.06.03
+Version : 22.06.08
 */
 
 public enum CANVAS_TYPE
@@ -27,12 +22,6 @@ public enum CANVAS_TYPE
     SHRINK,
 }
 
-public struct Pool_Info
-{
-    public Type type;
-    public int num;
-}
-
 public struct CanvasInfo
 {
     public GameObject obj;
@@ -41,9 +30,10 @@ public struct CanvasInfo
     public Transform trans;
     public Transform trans_pool;
     public Transform trans_popup;
+    public Transform trans_GUI;
 
     public void SetInfo(GameObject _obj, Canvas _canv, CanvasScaler _canvas_scaler, 
-                        Transform _trans, Transform _trans_pool, Transform _trans_p)
+                        Transform _trans, Transform _trans_pool, Transform _trans_p, Transform _trans_g)
     {
         obj = _obj;
         canvas = _canv;
@@ -51,6 +41,7 @@ public struct CanvasInfo
         trans = _trans;
         trans_pool = _trans_pool;
         trans_popup = _trans_p;
+        trans_GUI = _trans_g;
     }
 
     public void SetName(string _name)
@@ -66,7 +57,8 @@ public class SceneMgr : MonoBehaviour
     private static string canvas_pref_address;
     public static Dictionary<CANVAS_TYPE, CanvasInfo> active_canvas_list;
     public static bool canvas_set_complete;
-    public static int loading_commit_count, loading_pushed_count;
+    public static int loading_commit_count, loading_pushed_count, loading_left_count;
+    public static float loading_display;
     public GameObject pref_loading_ani;
     public static List<Type> pooling_list;
     
@@ -93,9 +85,11 @@ public class SceneMgr : MonoBehaviour
         active_canvas_list = null;
         active_canvas_list = new Dictionary<CANVAS_TYPE, CanvasInfo>();
 
-        InitSceneUI(typeof(PopupException), 1);
-        InitSceneUI(typeof(PopupShop), 1);
-        InitSceneUI(typeof(PopupException), 20);
+        InitSceneUI<PopupException>(98);
+        
+        InitSceneUI<GUIExceptionBtn>(89);
+        InitSceneUI<GUIShopBtn>(77);
+        InitSceneUI<PopupShop>(1);
 
         // 씬에 풀링 또는 초기 생성 요소들은 모두 로딩에 Commit됨.
         GenCanvas(CANVAS_TYPE.EXPAND, ( CanvasInfo Result ) =>
@@ -104,16 +98,17 @@ public class SceneMgr : MonoBehaviour
             loading_bar = obj_loading_ani.GetComponent<LoadingBar>();
             canvas_set_complete = true;
             StartCoroutine(LoadingProgress(15));
+            StartCoroutine(LoadingDisplay());
         });
     }
 
-    public void InitSceneUI(Type _type, int _num)
+    public void InitSceneUI<T>(int _num)
     {
         if (_num > 0)
         {
             for (int i = 0; i < _num; i ++)
             {
-                pooling_list.Add(_type);
+                pooling_list.Add(typeof(T));
             }
         }
         else
@@ -133,20 +128,15 @@ public class SceneMgr : MonoBehaviour
 
     IEnumerator LoadingProgress(int _multi_tunnel_count)
     {
-        float _GetPer(int _left)
-        {
-            return (float)(pooling_list.Count - _left) / (float)pooling_list.Count;
-        }
-
-        watch = new Stopwatch();
-        watch.Start();
-
         if (_multi_tunnel_count > 0)
         {
             int i;
-            int _left_count = pooling_list.Count;
-            int _load_id = _left_count;
-            int _load_display = 0;
+            loading_left_count = pooling_list.Count;
+            int _load_id = loading_left_count;
+            loading_display = 0;
+
+            watch = new Stopwatch();
+            watch.Start();
 
             while (true)
             {
@@ -160,11 +150,21 @@ public class SceneMgr : MonoBehaviour
                         for (i = 0; i < _multi_tunnel_count; i ++)
                         {
                             _load_id --;
-                            // if (pooling_list[_load_id].BaseType == typeof(Popup))
-                            PopupMgr.PoolingPopup(pooling_list[_load_id], () => {
-                                _left_tunnel --;
-                                _left_count --;
-                            });
+                            if (pooling_list[_load_id].BaseType == typeof(Popup))
+                            {
+                                PopupMgr.PoolingPopup(pooling_list[_load_id], () => {
+                                    _left_tunnel --;
+                                    loading_left_count --;
+                                });
+                            }
+                            else if (pooling_list[_load_id].BaseType == typeof(UI_GUI))
+                            {
+                                GUIMgr.PoolingGUI(pooling_list[_load_id], () => {
+                                    _left_tunnel --;
+                                    loading_left_count --;
+                                });
+                            }
+                            
                             if (_load_id == 0)
                             {
                                 break;
@@ -172,12 +172,7 @@ public class SceneMgr : MonoBehaviour
                         }
                     }
 
-                    loading_bar.bar_guage.sizeDelta = Vector2.Lerp(loading_bar.bar_guage.sizeDelta, new Vector2(_GetPer(_left_count) * 160f, 16f), 0.2f);
-                    loading_bar.bar_text.text = ((int)(_GetPer(_left_count) * 100f)).ToString() + " %";
-                    _load_display = (int)Mathf.Lerp(_load_display, pooling_list.Count - _left_count, 0.2f);
-                    loading_bar.bar_text_2.text = _load_display + " / " + pooling_list.Count;
-
-                    if (_left_count == 0)
+                    if (loading_left_count == 0)
                     {
                         break;
                     }
@@ -187,16 +182,49 @@ public class SceneMgr : MonoBehaviour
                     }
                     yield return null;
                 }
-                if (_left_count == 0)
+                if (loading_left_count == 0)
                 {
+                    watch.Stop();
                     break;
                 }
                 yield return null;
             }
-            watch.Stop();
-            loading_bar.bar_text_2.text = "Loaded In " + watch.ElapsedMilliseconds+"ms.";
             yield return null;
         }
+    }
+
+    IEnumerator LoadingDisplay()
+    {   
+        float _GetPer(int _left)
+        {
+            return (float)(pooling_list.Count - _left) / (float)pooling_list.Count;
+        }
+
+        while (true)
+        {
+            loading_bar.bar_guage.sizeDelta = Vector2.Lerp(loading_bar.bar_guage.sizeDelta, new Vector2(_GetPer(loading_left_count) * 160f, 12f), 0.2f);
+            loading_bar.bar_text.text = ((int)(_GetPer(loading_left_count) * 100f)).ToString() + " %";
+            loading_display = Mathf.Lerp(loading_display, pooling_list.Count - loading_left_count, 0.25f);
+            loading_bar.bar_text_2.text = (int)loading_display + " / " + pooling_list.Count;
+            if (loading_display < pooling_list.Count - 0.02f)
+            {
+                yield return null;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        loading_bar.bar_text_2.text = "Loaded In " + watch.ElapsedMilliseconds+"ms.";
+        InitUI();
+        yield return null;
+    }
+
+    public static void InitUI()
+    {
+        GUIMgr.GetGUI<GUIExceptionBtn>();
+        GUIMgr.GetGUI<GUIShopBtn>();
     }
 
     public static void GetCanvas(CANVAS_TYPE _type, Action<CanvasInfo> Result)
@@ -220,7 +248,7 @@ public class SceneMgr : MonoBehaviour
             GameObject _obj = handle.Result;
             _obj.transform.SetSiblingIndex(3);
             _info.SetInfo(_obj, _obj.GetComponent<Canvas>(), _obj.GetComponent<CanvasScaler>(), 
-                          _obj.transform, _obj.transform.GetChild(0), _obj.transform.GetChild(1));
+                          _obj.transform, _obj.transform.GetChild(0), _obj.transform.GetChild(1), _obj.transform.GetChild(2));
             SetCanvasScaleType(_type, _info);
             active_canvas_list.Add(_type, _info);
             LoadingScenePush();

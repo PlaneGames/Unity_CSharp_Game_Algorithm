@@ -72,7 +72,7 @@ public class PopupAniCtr : MonoBehaviour
 
             case POPUP_ANI.OPEN_FADEIN:
             _seq
-            .Insert(0f, _image.DOFade(.7f, 0.25f))
+            .Insert(0f, _image.DOFade(.4f, 0.25f))
             .InsertCallback(0.25f, () => { _callback(); } );
             break;
 
@@ -83,7 +83,6 @@ public class PopupAniCtr : MonoBehaviour
             .Insert(0f, _rect.DOAnchorPosY(0f, 0.5f).SetEase(Ease.OutBack))
             .InsertCallback(0.5f, () => { _callback(); } );
             break;
-
 
             case POPUP_ANI.CLOSE_GETAWAY:
             _seq

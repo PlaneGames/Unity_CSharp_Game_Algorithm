@@ -33,6 +33,10 @@ MonoBehaviour:
     m_Address: PopupToast
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: b1af80f8840320b4fbfb0b1f5b89dbb1
+    m_Address: PopupAlert
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bc4e2c821e9b5c04997bf54e3d40930b, type: 2}
   m_SchemaSet:

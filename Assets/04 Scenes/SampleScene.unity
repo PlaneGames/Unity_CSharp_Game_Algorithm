@@ -387,8 +387,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pref_loading_ani: {fileID: 100004, guid: aab3513d9620f4d478744a2c0e04fa26, type: 3}
-  obj_loading_ani: {fileID: 0}
-  loading_bar: {fileID: 0}
 --- !u!114 &865624545
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -411,6 +409,9 @@ MonoBehaviour:
   - name: Canvas
     BG_col: {r: 1, g: 1, b: 1, a: 0}
     text_col: {r: 1, g: 0.7294118, b: 0, a: 1}
+  - name: GUI
+    BG_col: {r: 1, g: 1, b: 1, a: 0}
+    text_col: {r: 0.599858, g: 0.8301887, b: 0, a: 1}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -503,10 +504,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1459190877}
+  - component: {fileID: 1459190880}
   - component: {fileID: 1459190878}
   - component: {fileID: 1459190879}
   m_Layer: 0
-  m_Name: PopupMgr
+  m_Name: UIMgr
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -548,5 +550,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 035fa9e12687576478a2d152798ecb97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1459190880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459190876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89612ea43448a5d4ebf4a7179ec85321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

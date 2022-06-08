@@ -11,7 +11,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.06.03
+Version : 22.06.08
 */
 
 public struct PopupInfo
@@ -57,23 +57,28 @@ public class PopupMgr : MonoBehaviour
         Init();
 
         PopupInit<PopupShop>();
+        PopupInit<PopupAlert>();
         PopupInit<PopupException>(true, true);
         PopupInit<PopupToast>(false);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             GetPopup<PopupShop>();
         }
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             GetPopup<PopupException>();
         }        
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             GetPopup<PopupToast>();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            GetPopup<PopupAlert>();
         }
     }
     
@@ -181,7 +186,7 @@ public class PopupMgr : MonoBehaviour
         else Debug.LogError(_type + " 팝업이 초기화되지 않았습니다.");
     }
 
-    /// <summary> Get Popup Data. <br/>- Left Pool : Active Object. <br/>- No Left Pool : Instantiate Object. </summary>
+    /// <summary> Pooling Popup. <br/>- Instantiate Object And Move To Canvas Pool </summary>
     public static void PoolingPopup<T>(Action Result) where T : Popup
     {
         PopupResult _result;
