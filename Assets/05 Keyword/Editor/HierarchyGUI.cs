@@ -248,7 +248,7 @@ namespace Assets.Editor
 
         private static void SetAnchorTag(GameObject _obj, Rect _rect)
         {
-            if (_obj.name.Contains("@ Popup") || _obj.name.Contains("@ UI"))
+            if (_obj.name.Contains("@ Popup") || _obj.name.Contains("@ GUI"))
             {
                 GUIStyle _style = new GUIStyle();
                 _style.alignment = TextAnchor.MiddleRight;

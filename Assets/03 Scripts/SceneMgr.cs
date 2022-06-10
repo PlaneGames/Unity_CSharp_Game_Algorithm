@@ -9,7 +9,7 @@ using UnityEngine.AddressableAssets;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.06.08
+Version : 22.06.09
 */
 
 public enum CANVAS_TYPE
@@ -59,9 +59,10 @@ public class SceneMgr : MonoBehaviour
     public static bool canvas_set_complete;
     public static int loading_commit_count, loading_pushed_count, loading_left_count;
     public static float loading_display;
-    public GameObject pref_loading_ani;
     public static List<Type> pooling_list;
     
+    // Loading Supporter
+    public GameObject pref_loading_ani;
     private GameObject obj_loading_ani;
     private LoadingBar loading_bar;
     private Stopwatch watch;
@@ -85,11 +86,11 @@ public class SceneMgr : MonoBehaviour
         active_canvas_list = null;
         active_canvas_list = new Dictionary<CANVAS_TYPE, CanvasInfo>();
 
-        InitSceneUI<PopupException>(98);
-        
-        InitSceneUI<GUIExceptionBtn>(89);
-        InitSceneUI<GUIShopBtn>(77);
+        InitSceneUI<PopupException>(1);
         InitSceneUI<PopupShop>(1);
+        InitSceneUI<PopupToast>(1);
+        InitSceneUI<GUIExceptionBtn>(1);
+        InitSceneUI<GUIShopBtn>(1);
 
         // 씬에 풀링 또는 초기 생성 요소들은 모두 로딩에 Commit됨.
         GenCanvas(CANVAS_TYPE.EXPAND, ( CanvasInfo Result ) =>

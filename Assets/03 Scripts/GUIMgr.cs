@@ -91,18 +91,27 @@ public class GUIMgr : MonoBehaviour
         void _SetInit(GameObject _obj, UI_GUI _GUI)
         {
             _result = new GUIResult(_obj, _GUI);
+            _obj.SetActive(true);
             _GUI.OnOpen();
+            _GUI.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_GUI);
             Result(_result);
         }
 
         if (GUI_infos.ContainsKey(_type))
         {
-            Addressables.InstantiateAsync(GUI_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_GUI).Completed += (handle) =>
+            if (GUI_pool[_type].Count > 0)
             {
-                _SetInit(handle.Result, handle.Result.GetComponent<T>());
-                NameTagCtr.SetUIName(handle.Result);
-                GUI_count_in_scene[_type] ++;
-            };
+                _SetInit(GUI_pool[_type][0].gameObject, GUI_pool[_type][0]);
+            }
+            else
+            {
+                Addressables.InstantiateAsync(GUI_infos[_type].pref_address, SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_GUI).Completed += (handle) =>
+                {
+                    _SetInit(handle.Result, handle.Result.GetComponent<T>());
+                    NameTagCtr.SetUIName(handle.Result);
+                    GUI_count_in_scene[_type] ++;
+                };
+            }
         }
         else Debug.LogError(_type + " GUI가 초기화되지 않았습니다.");
     }
@@ -113,8 +122,8 @@ public class GUIMgr : MonoBehaviour
         
         void _SetInit(GameObject _obj, UI_GUI _GUI)
         {
-            _obj.SetActive(false);
             Push(_GUI);
+            _obj.SetActive(false);
             Result();
         }
 

@@ -11,7 +11,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 /*
 Developer : Jae Young Kwon
-Version : 22.06.08
+Version : 22.06.09
 */
 
 public struct PopupInfo
@@ -64,24 +64,25 @@ public class PopupMgr : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             GetPopup<PopupShop>();
+            GetPopup<PopupAlert>();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.W))
         {
             GetPopup<PopupException>();
         }        
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             GetPopup<PopupToast>();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha0))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             GetPopup<PopupAlert>();
         }
     }
-    
+
     private void Init()
     {
         last_popup_order = 0;
