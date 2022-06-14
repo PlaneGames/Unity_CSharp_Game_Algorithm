@@ -32,6 +32,9 @@ public abstract class Popup : MonoBehaviour
     [HideInInspector] public Sequence seq;
     private bool is_closing;
 
+    /// <summary> 이건.. 말도 안된는 거야! </summary>
+    public const int _1234 = 1234;
+
     private List<PopupElement> linked_PEs { get; set; }
 
     private void Awake()
