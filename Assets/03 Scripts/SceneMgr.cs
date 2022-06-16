@@ -67,6 +67,7 @@ public class SceneMgr : MonoBehaviour
     private LoadingBar loading_bar;
     private Stopwatch watch;
 
+
     private void Start()
     {
         Init();

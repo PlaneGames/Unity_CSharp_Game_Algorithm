@@ -23,4 +23,9 @@ public class PopupException : Popup
     {
     }
 
+    public void SetDisplay()
+    {
+        Debug.Log(123);
+    }
+
 }
