@@ -58,6 +58,7 @@ public class PopupMgr : MonoBehaviour
 
         PopupInit<PopupShop>();
         PopupInit<PopupAlert>();
+        PopupInit<PopupCheatAlert>();
         PopupInit<PopupException>(true, true);
         PopupInit<PopupToast>(false);
     }
@@ -66,8 +67,7 @@ public class PopupMgr : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            GetPopup<PopupShop>();
-            GetPopup<PopupAlert>();
+            GetPopup<PopupCheatAlert>();
         }
         if (Input.GetKeyDown(KeyCode.W))
         {
