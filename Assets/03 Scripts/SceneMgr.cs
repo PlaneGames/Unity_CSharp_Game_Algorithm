@@ -90,8 +90,9 @@ public class SceneMgr : MonoBehaviour
         InitSceneUI<PopupException>(1);
         InitSceneUI<PopupShop>(1);
         InitSceneUI<PopupToast>(1);
-        InitSceneUI<GUIExceptionBtn>(1);
-        InitSceneUI<GUIShopBtn>(1);
+        InitSceneUI<UIEExceptionBtn>(1);
+        InitSceneUI<UIEShopBtn>(1);
+        InitSceneUI<UIEChatBtn>(1);
 
         // 씬에 풀링 또는 초기 생성 요소들은 모두 로딩에 Commit됨.
         GenCanvas(CANVAS_TYPE.EXPAND, ( CanvasInfo Result ) =>
@@ -159,9 +160,9 @@ public class SceneMgr : MonoBehaviour
                                     loading_left_count --;
                                 });
                             }
-                            else if (pooling_list[_load_id].BaseType == typeof(UI_GUI))
+                            else if (pooling_list[_load_id].BaseType == typeof(UIElement))
                             {
-                                GUIMgr.PoolingGUI(pooling_list[_load_id], () => {
+                                UIEMgr.PoolingGUI(pooling_list[_load_id], () => {
                                     _left_tunnel --;
                                     loading_left_count --;
                                 });
@@ -225,8 +226,7 @@ public class SceneMgr : MonoBehaviour
 
     public static void InitUI()
     {
-        GUIMgr.GetGUI<GUIExceptionBtn>();
-        GUIMgr.GetGUI<GUIShopBtn>();
+        UIEMgr.GetGUI<UIEChatBtn>();
     }
 
     public static void GetCanvas(CANVAS_TYPE _type, Action<CanvasInfo> Result)

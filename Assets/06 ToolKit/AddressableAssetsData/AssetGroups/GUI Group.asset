@@ -18,11 +18,15 @@ MonoBehaviour:
   m_GUID: d0107fefcc95d5b4b82b6e13a6b0a111
   m_SerializeEntries:
   - m_GUID: d4b366bd585f76146a52df546ea8547d
-    m_Address: GUIExceptionBtn
+    m_Address: UIEExceptionBtn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 15fab12eb8beb354aa4268c6fbc56efb
-    m_Address: GUIShopBtn
+    m_Address: UIEShopBtn
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5e4312f20411d9a4fbcbe48c98ea82d7
+    m_Address: UIEChatBtn
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

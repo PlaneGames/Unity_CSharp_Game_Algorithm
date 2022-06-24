@@ -22,19 +22,19 @@ public struct GUIInfo
 public struct GUIResult
 {
     public GameObject obj;
-    public UI_GUI comp;
+    public UIElement comp;
 
-    public GUIResult(GameObject _obj, UI_GUI _comp)
+    public GUIResult(GameObject _obj, UIElement _comp)
     {
         this.obj = _obj;
         this.comp = _comp;
     }
 }
 
-public class GUIMgr : MonoBehaviour
+public class UIEMgr : MonoBehaviour
 {
     public static Dictionary<Type, GUIInfo> GUI_infos;
-    public static Dictionary<Type, List<UI_GUI>> GUI_pool;
+    public static Dictionary<Type, List<UIElement>> GUI_pool;
     public static Dictionary<Type, int> GUI_count_in_scene;
 
     public static int gui_order;
@@ -44,8 +44,9 @@ public class GUIMgr : MonoBehaviour
     {
         Init();
 
-        GUIInit<GUIShopBtn>();
-        GUIInit<GUIExceptionBtn>();
+        GUIInit<UIEShopBtn>();
+        GUIInit<UIEExceptionBtn>();
+        GUIInit<UIEChatBtn>();
     }
 
     private void Init()
@@ -56,7 +57,7 @@ public class GUIMgr : MonoBehaviour
         GUI_infos = new Dictionary<Type, GUIInfo>();
 
         GUI_pool = null;
-        GUI_pool = new Dictionary<Type, List<UI_GUI>>();
+        GUI_pool = new Dictionary<Type, List<UIElement>>();
 
         GUI_count_in_scene = null;
         GUI_count_in_scene = new Dictionary<Type, int>();
@@ -70,7 +71,7 @@ public class GUIMgr : MonoBehaviour
         if (!GUI_infos.ContainsKey(typeof(T)))
         {
             GUI_infos.Add(typeof(T), _info);
-            List<UI_GUI> _list = new List<UI_GUI>();
+            List<UIElement> _list = new List<UIElement>();
             GUI_pool.Add(typeof(T), _list);
             GUI_count_in_scene.Add(typeof(T), 0);
             
@@ -78,17 +79,17 @@ public class GUIMgr : MonoBehaviour
             Debug.LogError(_info.pref_address + "GUI가 중복으로 초기화되었습니다.");
     }
 
-    public static void GetGUI<T>() where T : UI_GUI
+    public static void GetGUI<T>() where T : UIElement
     {
         GetGUI<T>( (Result) => {} );
     }
 
-    public static void GetGUI<T>(Action<GUIResult> Result) where T : UI_GUI
+    public static void GetGUI<T>(Action<GUIResult> Result) where T : UIElement
     {
         GUIResult _result;
         Type _type = typeof(T);
         
-        void _SetInit(GameObject _obj, UI_GUI _GUI)
+        void _SetInit(GameObject _obj, UIElement _GUI)
         {
             _result = new GUIResult(_obj, _GUI);
             _obj.SetActive(true);
@@ -116,11 +117,11 @@ public class GUIMgr : MonoBehaviour
         else Debug.LogError(_type + " GUI가 초기화되지 않았습니다.");
     }
 
-    public static void PoolingGUI<T>(Action Result) where T : UI_GUI
+    public static void PoolingGUI<T>(Action Result) where T : UIElement
     {
         Type _type = typeof(T);
         
-        void _SetInit(GameObject _obj, UI_GUI _GUI)
+        void _SetInit(GameObject _obj, UIElement _GUI)
         {
             Push(_GUI);
             _obj.SetActive(false);
@@ -141,17 +142,17 @@ public class GUIMgr : MonoBehaviour
 
     public static void PoolingGUI(Type _type, Action Result)
     {
-        MethodInfo get_pe = typeof(GUIMgr).GetMethod("PoolingGUI", new Type[] { typeof(Action) } );
+        MethodInfo get_pe = typeof(UIEMgr).GetMethod("PoolingGUI", new Type[] { typeof(Action) } );
         get_pe = get_pe.MakeGenericMethod(_type);
         get_pe.Invoke(null, new object[] { Result });
     }
 
-    public static void Pop(UI_GUI _GUI)
+    public static void Pop(UIElement _GUI)
     {
         GUI_pool[_GUI.GetType()].Remove(_GUI);
     }
 
-    public static void Push(UI_GUI _GUI)
+    public static void Push(UIElement _GUI)
     {
         GUI_pool[_GUI.GetType()].Add(_GUI);
         _GUI.transform.SetParent(SceneMgr.active_canvas_list[CANVAS_TYPE.EXPAND].trans_pool);

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1462369526874395779}
   - component: {fileID: 6566628491576868041}
   m_Layer: 0
-  m_Name: GUIShopBtn
+  m_Name: UIEShopBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

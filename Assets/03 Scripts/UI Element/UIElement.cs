@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UI_GUI : MonoBehaviour
+public class UIElement : MonoBehaviour
 {
     public RectTransform rect;
 
