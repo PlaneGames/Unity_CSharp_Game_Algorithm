@@ -30,7 +30,7 @@ public struct CanvasInfo
     public Transform trans;
     public Transform trans_pool;
     public Transform trans_popup;
-    public Transform trans_GUI;
+    public Transform trans_UIE;
 
     public void SetInfo(GameObject _obj, Canvas _canv, CanvasScaler _canvas_scaler, 
                         Transform _trans, Transform _trans_pool, Transform _trans_p, Transform _trans_g)
@@ -41,7 +41,7 @@ public struct CanvasInfo
         trans = _trans;
         trans_pool = _trans_pool;
         trans_popup = _trans_p;
-        trans_GUI = _trans_g;
+        trans_UIE = _trans_g;
     }
 
     public void SetName(string _name)
@@ -162,7 +162,7 @@ public class SceneMgr : MonoBehaviour
                             }
                             else if (pooling_list[_load_id].BaseType == typeof(UIElement))
                             {
-                                UIEMgr.PoolingGUI(pooling_list[_load_id], () => {
+                                UIEMgr.PoolingUIE(pooling_list[_load_id], () => {
                                     _left_tunnel --;
                                     loading_left_count --;
                                 });
@@ -226,7 +226,7 @@ public class SceneMgr : MonoBehaviour
 
     public static void InitUI()
     {
-        UIEMgr.GetGUI<UIEChatBtn>();
+        UIEMgr.GetUIE<UIEChatBtn>();
     }
 
     public static void GetCanvas(CANVAS_TYPE _type, Action<CanvasInfo> Result)

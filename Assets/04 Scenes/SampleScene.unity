@@ -531,7 +531,7 @@ MonoBehaviour:
   - name: Canvas
     BG_col: {r: 1, g: 1, b: 1, a: 0}
     text_col: {r: 1, g: 0.7294118, b: 0, a: 1}
-  - name: GUI
+  - name: UIE
     BG_col: {r: 1, g: 1, b: 1, a: 0}
     text_col: {r: 0.599858, g: 0.8301887, b: 0, a: 1}
 --- !u!1 &963194225
