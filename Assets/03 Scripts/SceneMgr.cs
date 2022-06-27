@@ -70,6 +70,8 @@ public class SceneMgr : MonoBehaviour
 
     private void Start()
     {
+        Application.runInBackground = true;
+
         Init();
     }
 
