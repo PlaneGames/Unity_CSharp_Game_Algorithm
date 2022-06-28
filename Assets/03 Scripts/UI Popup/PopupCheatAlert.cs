@@ -25,12 +25,12 @@ public class PopupCheatAlert : Popup
 
     public void OnUpBtnClick()
     {
-
+        Client.ReqChatRoomOpen("문을여시오.", 1234);
     }    
     
     public void OnDownBtnClick()
     {
-
+        Client.ReqChatRoomJoin("문을여시오.", 1234);
     }
 
 }

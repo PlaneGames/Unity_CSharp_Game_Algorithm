@@ -4,44 +4,106 @@ using UnityEngine;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;   //요게 바이너리 포매터임!
+using System.Runtime.InteropServices;
 
-[Serializable]  //하나로 직렬화 묶겠다. 뜻? 바이트화 하겠다?
-public class SimplePacket       //모노비헤이비어는 싱글톤으로 만들거라서 여기서는 삭제
+
+public enum PacketType
+{
+    // For Server
+    ChatRoomOpenReq = 1,
+    ChatRoomJoinReq,
+
+
+    // For Client
+    ChatRoomOpenComplete,
+    ChatRoomOpenFailed,
+}
+
+public interface IPacket
 {
 
-    public float mouseX = 0.0f;
-    public float mouseY = 0.0f;
+}
 
-    //쏘는거
-    public static byte[] ToByteArray(SimplePacket packet)
+public class Packet
+{
+    public byte type;
+    public IPacket data;
+
+    public Packet(
+        PacketType _type,
+        IPacket _data
+    )
     {
-           //스트림생성 한다.  물흘려보내기
-           MemoryStream stream = new MemoryStream();
-        
-            //스트림으로 건너온 패킷을 포맷으로 바이너리 묶어준다.
-           BinaryFormatter formatter = new BinaryFormatter();
-
-          formatter.Serialize(stream, packet.mouseX);       //스트림에 담는다. 시리얼라이즈는 담는다는 뜻임.
-          formatter.Serialize(stream, packet.mouseY);
-
-        return stream.ToArray();
+        type = (byte)_type;
+        data = _data;
     }
 
-    //받는거
-    public static SimplePacket FromByteArray(byte[] input)
+    public static byte[] PacketToByte(Packet _packet)
     {
-        //스트림 생성
-        MemoryStream stream = new MemoryStream(input);
-        //스트림으로 데이터 받을 때 바이너리 포매터 말고 다른거도 있는지 찾아보기
-        //바이너리 포매터로 스트림에 떠내려온 데이터를 건져낸다.
-        BinaryFormatter formatter = new BinaryFormatter();
-        //패킷을 생성해서      //패킷 생성기에 대해 알아보기!
-        SimplePacket packet = new SimplePacket();
-        //생성한 패킷에 디이터를 디시리얼 라이즈해서 담는다.
-        packet.mouseX = (float)formatter.Deserialize(stream);
-        packet.mouseY = (float)formatter.Deserialize(stream);
+        // Packet Type.
+        byte[] _packet_type = new byte[] { _packet.type };
 
-        return packet;
+        // Packet Data.
+        int size = Marshal.SizeOf(_packet.data);
+        byte[] arr = new byte[size];
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+
+        Marshal.StructureToPtr(_packet.data, ptr, true);
+        Marshal.Copy(ptr, arr, 0, size);
+        Marshal.FreeHGlobal(ptr);
+
+        // Packet Type + Data = Result.
+        byte[] _res = new byte[_packet_type.Length + arr.Length];
+        Array.Copy(_packet_type, 0, _res, 0, _packet_type.Length);
+        Array.Copy(arr, 0, _res, _packet_type.Length, arr.Length);
+
+        return _res;
     }
 
+    public static PacketType GetPacketType(byte[] buffer)
+    {
+        return (PacketType)buffer[0];
+    }
+
+    public static Packet ToPacket<T>(byte[] buffer, PacketType _type) where T : IPacket, new()
+    {
+        Type _packet_t = typeof(T);
+
+        int size = Marshal.SizeOf(_packet_t);
+        if (size > buffer.Length)
+        {
+            throw new Exception();
+        }
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        Marshal.Copy(buffer, 1, ptr, size);
+
+        IPacket _data = new T();
+        _data = (T)Marshal.PtrToStructure(ptr, _packet_t);
+        Packet _res = new Packet(_type, _data);
+        Marshal.FreeHGlobal(ptr);
+
+        return _res;
+    }
+}
+
+[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+[Serializable]
+public struct PacketChatRoomOpenReq : IPacket
+{
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+    public string room_name;
+
+    [MarshalAs(UnmanagedType.I2)]
+    public int room_pw;
+}
+
+[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+[Serializable]
+public struct PacketChatRoomJoinReq : IPacket
+{
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+    public string room_name;
+
+    [MarshalAs(UnmanagedType.I2)]
+    public int room_pw;
 }
