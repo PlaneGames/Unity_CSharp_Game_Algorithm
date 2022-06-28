@@ -41,33 +41,53 @@ public class Client : SingleTonMonobehaviour<Client>
         }
     }
 
-    public static void Send(Packet _packet)
-    {
-        if (Client.Instance.clientSocket == null)
-        {
-            return;
-        }
-
-        byte[] _res = Packet.PacketToByte(_packet);
-        Client.Instance.clientSocket.Send(_res, 0, _res.Length, SocketFlags.None);
-    }
-
     public static void ReqChatRoomOpen(string _room_name, int _room_pw)
     {
         PacketChatRoomOpenReq _data = new PacketChatRoomOpenReq();
         _data.room_name = _room_name;
         _data.room_pw = _room_pw;
         Packet _packet = new Packet(PacketType.ChatRoomOpenReq, _data);
-        Client.Send(_packet);
+        Packet.Send(_packet, Client.Instance.clientSocket);
     }
     
     public static void ReqChatRoomJoin(string _room_name, int _room_pw)
-    {
+    { 
         PacketChatRoomJoinReq _data = new PacketChatRoomJoinReq();
         _data.room_name = _room_name;
         _data.room_pw = _room_pw;
         Packet _packet = new Packet(PacketType.ChatRoomJoinReq, _data);
-        Client.Send(_packet);
+        Packet.Send(_packet, Client.Instance.clientSocket);
+    }
+
+    private void Update()
+    {
+        ReceivePacket();
+    }
+
+    private void ReceivePacket()
+    {
+        if(Client.Instance.clientSocket != null && Client.Instance.clientSocket.Available != 0)
+        {
+            byte[] buffer = new byte[512];
+            Client.Instance.clientSocket.Receive(buffer);
+            ProgressPacket(Packet.GetPacketType(buffer), buffer, Client.Instance.clientSocket);
+        }
+    }
+
+    private void ProgressPacket(PacketType _packet_t, byte[] _buffer, Socket _client)
+    {
+        Packet _packet = null;
+
+        switch (_packet_t)
+        {
+        case PacketType.ChatRoomOpenComplete:
+            PopupMgr.GetPopup<PopupAlert>();
+            Debug.Log("ChatRoomOpenComplete!");
+        break;            
+
+        default:
+        return;
+        }
     }
 
 }

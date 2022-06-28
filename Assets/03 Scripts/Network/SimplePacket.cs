@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Net;
+using System.Net.Sockets;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;   //요게 바이너리 포매터임!
 using System.Runtime.InteropServices;
@@ -60,6 +62,14 @@ public class Packet
         return _res;
     }
 
+    public static byte[] PacketTypeToByte(PacketType _packet)
+    {
+        // Packet Type.
+        byte[] _packet_type = new byte[] { (byte)_packet };
+
+        return _packet_type;
+    }
+
     public static PacketType GetPacketType(byte[] buffer)
     {
         return (PacketType)buffer[0];
@@ -84,6 +94,19 @@ public class Packet
 
         return _res;
     }
+
+    public static void Send(Packet _packet, Socket _socket)
+    {
+        byte[] _res = Packet.PacketToByte(_packet);
+        _socket.Send(_res, 0, _res.Length, SocketFlags.None);
+    }
+
+    public static void Send(PacketType _packet, Socket _socket)
+    {
+        byte[] _res = Packet.PacketTypeToByte(_packet);
+        _socket.Send(_res, 0, _res.Length, SocketFlags.None);
+    }
+
 }
 
 [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]

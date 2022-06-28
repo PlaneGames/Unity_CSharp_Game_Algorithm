@@ -70,7 +70,7 @@ public class Server : SingleTonMonobehaviour<Server>
         }
     }
 
-    private void ReceiveUserMsg()
+    private void ReceivePacket()
     {
         if(Connections.Count != 0)
         {
@@ -92,32 +92,33 @@ public class Server : SingleTonMonobehaviour<Server>
 
         switch (_packet_t)
         {
-            case PacketType.ChatRoomOpenReq:
-                _packet = Packet.ToPacket<PacketChatRoomOpenReq>(_buffer, PacketType.ChatRoomOpenReq);
-                PacketChatRoomOpenReq _ChatRoomOpenReq = (PacketChatRoomOpenReq)_packet.data;
-                ChatRoom.CreateChatRoom(_ChatRoomOpenReq.room_name, _ChatRoomOpenReq.room_pw, ( Result ) => 
+        case PacketType.ChatRoomOpenReq:
+            _packet = Packet.ToPacket<PacketChatRoomOpenReq>(_buffer, PacketType.ChatRoomOpenReq);
+            PacketChatRoomOpenReq _ChatRoomOpenReq = (PacketChatRoomOpenReq)_packet.data;
+            ChatRoom.CreateChatRoom(_ChatRoomOpenReq.room_name, _ChatRoomOpenReq.room_pw, ( Result ) => 
+            {
+                if (Result.success)
                 {
-                    if (Result.success)
-                    {
-                        Debug.Log("\nType : Room Open!\nName : " + _ChatRoomOpenReq.room_name + "\nPW : " + _ChatRoomOpenReq.room_pw);
-                    }
-                });
-            break;            
-            
-            case PacketType.ChatRoomJoinReq:
-                _packet = Packet.ToPacket<PacketChatRoomJoinReq>(_buffer, PacketType.ChatRoomJoinReq);
-                PacketChatRoomJoinReq _ChatRoomJoinReq = (PacketChatRoomJoinReq)_packet.data;
-                Debug.Log("\nType : Room Join!\nName : " + _ChatRoomJoinReq.room_name + "\nPW : " + _ChatRoomJoinReq.room_pw);
-            break;
+                    Packet.Send(PacketType.ChatRoomOpenComplete, _client);
+                    Debug.Log("\nType : Room Open!\nName : " + _ChatRoomOpenReq.room_name + "\nPW : " + _ChatRoomOpenReq.room_pw);
+                }
+            });
+        break;            
+        
+        case PacketType.ChatRoomJoinReq:
+            _packet = Packet.ToPacket<PacketChatRoomJoinReq>(_buffer, PacketType.ChatRoomJoinReq);
+            PacketChatRoomJoinReq _ChatRoomJoinReq = (PacketChatRoomJoinReq)_packet.data;
+            Debug.Log("\nType : Room Join!\nName : " + _ChatRoomJoinReq.room_name + "\nPW : " + _ChatRoomJoinReq.room_pw);
+        break;
 
-            default:
-            return;
+        default:
+        return;
         }
     }
 
     private void Update()
     {
         CheckNewUser();
-        ReceiveUserMsg();
+        ReceivePacket();
     }
 }
