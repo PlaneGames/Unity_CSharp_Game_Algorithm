@@ -59,10 +59,12 @@ public class PopupMgr : MonoBehaviour
         PopupInit<PopupShop>();
         PopupInit<PopupAlert>();
         PopupInit<PopupCheatAlert>();
+        PopupInit<PopupChatRoom>();
         PopupInit<PopupException>(true, true);
         PopupInit<PopupToast>(false);
     }
 
+/*
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Q))
@@ -82,6 +84,7 @@ public class PopupMgr : MonoBehaviour
             GetPopup<PopupAlert>();
         }
     }
+*/
 
     private void Init()
     {

@@ -41,6 +41,10 @@ MonoBehaviour:
     m_Address: PopupCheatAlert
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: e9ebafdbebcc5f742b7c7add0ffc581b
+    m_Address: PopupChatRoom
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bc4e2c821e9b5c04997bf54e3d40930b, type: 2}
   m_SchemaSet:

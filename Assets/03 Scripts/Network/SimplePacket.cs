@@ -14,11 +14,13 @@ public enum PacketType
     // For Server
     ChatRoomOpenReq = 1,
     ChatRoomJoinReq,
+    ChatSendMsg,
 
 
     // For Client
     ChatRoomOpenComplete,
     ChatRoomOpenFailed,
+    ChatReceiveMsg,
 }
 
 public interface IPacket
@@ -129,4 +131,38 @@ public struct PacketChatRoomJoinReq : IPacket
 
     [MarshalAs(UnmanagedType.I2)]
     public int room_pw;
+}
+
+[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+[Serializable]
+public struct PacketChatSendMsgReq : IPacket
+{
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+    public string user_name;
+
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 320)]
+    public string talk_text;
+
+    [MarshalAs(UnmanagedType.I4, SizeConst = 320)]
+    public int UUID;
+}
+
+[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+[Serializable]
+public struct PacketChatReceiveMsgReq : IPacket
+{
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+    public string user_name;
+    
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
+    public string time;
+
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 320)]
+    public string talk_text;
+
+    [MarshalAs(UnmanagedType.Bool)]
+    public bool is_mine;
+
+    [MarshalAs(UnmanagedType.I4, SizeConst = 320)]
+    public int UUID;
 }

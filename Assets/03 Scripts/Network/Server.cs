@@ -79,9 +79,18 @@ public class Server : SingleTonMonobehaviour<Server>
 
             foreach(Socket client in cloneConnections)
             {
-                byte[] buffer = new byte[512];
-                client.Receive(buffer);
-                ProgressPacket(Packet.GetPacketType(buffer), buffer, client);
+                try
+                {
+                    byte[] buffer = new byte[512];
+                    client.Receive(buffer);
+                    ProgressPacket(Packet.GetPacketType(buffer), buffer, client);
+                }
+                catch
+                {
+                    client.Close();
+                    Debug.Log(client + "의 접속이 끊겼습니다.");
+                    //cloneConnections.Remove(client);
+                }
             }
         }
     }
@@ -100,7 +109,6 @@ public class Server : SingleTonMonobehaviour<Server>
                 if (Result.success)
                 {
                     Packet.Send(PacketType.ChatRoomOpenComplete, _client);
-                    Debug.Log("\nType : Room Open!\nName : " + _ChatRoomOpenReq.room_name + "\nPW : " + _ChatRoomOpenReq.room_pw);
                 }
             });
         break;            
@@ -108,7 +116,31 @@ public class Server : SingleTonMonobehaviour<Server>
         case PacketType.ChatRoomJoinReq:
             _packet = Packet.ToPacket<PacketChatRoomJoinReq>(_buffer, PacketType.ChatRoomJoinReq);
             PacketChatRoomJoinReq _ChatRoomJoinReq = (PacketChatRoomJoinReq)_packet.data;
-            Debug.Log("\nType : Room Join!\nName : " + _ChatRoomJoinReq.room_name + "\nPW : " + _ChatRoomJoinReq.room_pw);
+        break;
+
+        case PacketType.ChatSendMsg:
+            _packet = Packet.ToPacket<PacketChatSendMsgReq>(_buffer, PacketType.ChatSendMsg);
+            PacketChatSendMsgReq _ChatSendMsg = (PacketChatSendMsgReq)_packet.data;
+
+            PacketChatReceiveMsgReq _m_ChatReceiveMsg = new PacketChatReceiveMsgReq();
+            _m_ChatReceiveMsg.user_name = _ChatSendMsg.user_name;
+            _m_ChatReceiveMsg.time = GetDateText();
+            _m_ChatReceiveMsg.talk_text = _ChatSendMsg.talk_text;
+            _m_ChatReceiveMsg.is_mine = false;
+            _m_ChatReceiveMsg.UUID = _ChatSendMsg.UUID;
+
+            foreach (Socket client in Connections)
+            {
+                if (client != _client)
+                {
+                    _m_ChatReceiveMsg.is_mine = false;
+                } 
+                else
+                {
+                    _m_ChatReceiveMsg.is_mine = true;
+                }
+                Packet.Send(new Packet(PacketType.ChatReceiveMsg, _m_ChatReceiveMsg), client);
+            }
         break;
 
         default:
@@ -120,5 +152,21 @@ public class Server : SingleTonMonobehaviour<Server>
     {
         CheckNewUser();
         ReceivePacket();
+    }
+
+    public static string GetDateText()
+    {
+        string _type = "오전";
+        int _h = DateTime.Now.Hour;
+        int _m = DateTime.Now.Minute;
+        if (_h >= 12)
+        {
+            _type = "오후";
+            if (_h >= 13)
+            {
+                _h -= 12;
+            }
+        }
+        return _type + " " + _h.ToString() + ":" + _m.ToString();
     }
 }

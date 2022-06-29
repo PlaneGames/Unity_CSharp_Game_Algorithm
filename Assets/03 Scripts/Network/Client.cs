@@ -11,7 +11,8 @@ public class Client : SingleTonMonobehaviour<Client>
 {
 
     public string serverIp = "127.0.0.1";
-    Socket clientSocket = null;
+    public Socket clientSocket = null;
+    public int UUID;
 
 
     void Start()
@@ -25,6 +26,7 @@ public class Client : SingleTonMonobehaviour<Client>
         {
             Debug.Log("Connecting to Server");
             this.clientSocket.Connect(serverEndPoint);
+            UUID = UnityEngine.Random.Range(10000000, 99999999); //! UUID는 서버에서 발급해야함.
         }
         catch (SocketException e)
         {
@@ -57,6 +59,16 @@ public class Client : SingleTonMonobehaviour<Client>
         _data.room_pw = _room_pw;
         Packet _packet = new Packet(PacketType.ChatRoomJoinReq, _data);
         Packet.Send(_packet, Client.Instance.clientSocket);
+    }    
+
+    public static void ReqChatSendMsg(string _name, string _talk)
+    { 
+        PacketChatSendMsgReq _data = new PacketChatSendMsgReq();
+        _data.user_name = _name;
+        _data.talk_text = _talk;
+        _data.UUID = Client.Instance.UUID;
+        Packet _packet = new Packet(PacketType.ChatSendMsg, _data);
+        Packet.Send(_packet, Client.Instance.clientSocket);
     }
 
     private void Update()
@@ -81,8 +93,23 @@ public class Client : SingleTonMonobehaviour<Client>
         switch (_packet_t)
         {
         case PacketType.ChatRoomOpenComplete:
-            PopupMgr.GetPopup<PopupAlert>();
-            Debug.Log("ChatRoomOpenComplete!");
+            PopupMgr.GetPopup<PopupChatRoom>();
+        break;                    
+        
+        case PacketType.ChatReceiveMsg:
+            _packet = Packet.ToPacket<PacketChatReceiveMsgReq>(_buffer, PacketType.ChatReceiveMsg);
+            PacketChatReceiveMsgReq _ChatReceiveMsg = (PacketChatReceiveMsgReq)_packet.data;
+            var _obj = GameObject.Find("@ PopupChatRoom");
+            var _comp = _obj.GetComponent<PopupChatRoom>();
+
+            if (_ChatReceiveMsg.is_mine)
+            {
+                _comp.CreateMyTalkBalloon(_ChatReceiveMsg.UUID, _ChatReceiveMsg.time, _ChatReceiveMsg.talk_text);
+            }               
+            else
+            {
+                _comp.CreateOtherTalkBalloon(_ChatReceiveMsg.UUID, _ChatReceiveMsg.user_name, _ChatReceiveMsg.time, _ChatReceiveMsg.talk_text);
+            }
         break;            
 
         default:
