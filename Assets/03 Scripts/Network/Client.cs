@@ -93,14 +93,14 @@ public class Client : SingleTonMonobehaviour<Client>
         switch (_packet_t)
         {
         case PacketType.ChatRoomOpenComplete:
-            PopupMgr.GetPopup<PopupChatRoom>();
-        break;                    
+            UI_PopupMgr.GetPopup<UIP_ChatRoom>();
+        break;
         
         case PacketType.ChatReceiveMsg:
             _packet = Packet.ToPacket<PacketChatReceiveMsgReq>(_buffer, PacketType.ChatReceiveMsg);
             PacketChatReceiveMsgReq _ChatReceiveMsg = (PacketChatReceiveMsgReq)_packet.data;
             var _obj = GameObject.Find("@ PopupChatRoom");
-            var _comp = _obj.GetComponent<PopupChatRoom>();
+            var _comp = _obj.GetComponent<UIP_ChatRoom>();
 
             if (_ChatReceiveMsg.is_mine)
             {

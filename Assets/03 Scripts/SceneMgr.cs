@@ -89,12 +89,16 @@ public class SceneMgr : MonoBehaviour
         active_canvas_list = null;
         active_canvas_list = new Dictionary<CANVAS_TYPE, CanvasInfo>();
 
-        InitSceneUI<PopupException>(1);
-        InitSceneUI<PopupShop>(1);
-        InitSceneUI<PopupToast>(1);
-        InitSceneUI<UIEExceptionBtn>(1);
-        InitSceneUI<UIEShopBtn>(1);
-        InitSceneUI<UIEChatBtn>(1);
+        InitSceneUI<UIE_ChatBtn>(1);
+
+        /*
+        InitSceneUI<UIP_Exception>(1);
+        InitSceneUI<UIP_Shop>(1);
+        InitSceneUI<UIP_Toast>(1);
+        InitSceneUI<UIE_ExceptionBtn>(1);
+        InitSceneUI<UIE_ShopBtn>(1);
+        InitSceneUI<UIE_ChatBtn>(1);
+        */
 
         // 씬에 풀링 또는 초기 생성 요소들은 모두 로딩에 Commit됨.
         GenCanvas(CANVAS_TYPE.EXPAND, ( CanvasInfo Result ) =>
@@ -121,16 +125,6 @@ public class SceneMgr : MonoBehaviour
         //UnityEngine.Debug.Log( _type.BaseType == typeof(Popup) );
     }
 
-    public void OnOpenPopupShop()
-    {
-        PopupMgr.GetPopup<PopupShop>();
-    } 
-
-    public void OnOpenPopupException()
-    {
-        PopupMgr.GetPopup<PopupException>();
-    }
-
     IEnumerator LoadingProgress(int _multi_tunnel_count)
     {
         if (_multi_tunnel_count > 0)
@@ -155,16 +149,16 @@ public class SceneMgr : MonoBehaviour
                         for (i = 0; i < _multi_tunnel_count; i ++)
                         {
                             _load_id --;
-                            if (pooling_list[_load_id].BaseType == typeof(Popup))
+                            if (pooling_list[_load_id].BaseType == typeof(UI_Popup))
                             {
-                                PopupMgr.PoolingPopup(pooling_list[_load_id], () => {
+                                UI_PopupMgr.PoolingPopup(pooling_list[_load_id], () => {
                                     _left_tunnel --;
                                     loading_left_count --;
                                 });
                             }
-                            else if (pooling_list[_load_id].BaseType == typeof(UIElement))
+                            else if (pooling_list[_load_id].BaseType == typeof(UI_Element))
                             {
-                                UIEMgr.PoolingUIE(pooling_list[_load_id], () => {
+                                UI_ElementMgr.PoolingUIE(pooling_list[_load_id], (Result) => {
                                     _left_tunnel --;
                                     loading_left_count --;
                                 });
@@ -228,7 +222,7 @@ public class SceneMgr : MonoBehaviour
 
     public static void InitUI()
     {
-        UIEMgr.GetUIE<UIEChatBtn>();
+        UI_ElementMgr.GetUIE(typeof(UIE_ChatBtn), (Result) => {});
     }
 
     public static void GetCanvas(CANVAS_TYPE _type, Action<CanvasInfo> Result)

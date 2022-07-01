@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: UI Element Group
+  m_EditorClassIdentifier: 
+  m_GroupName: UI Element Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 86556adb6a0d9da4a96b3aaa67377c1c
+  m_SerializeEntries:
+  - m_GUID: d4b366bd585f76146a52df546ea8547d
+    m_Address: UIE_ExceptionBtn
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 15fab12eb8beb354aa4268c6fbc56efb
+    m_Address: UIE_ShopBtn
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5e4312f20411d9a4fbcbe48c98ea82d7
+    m_Address: UIE_ChatBtn
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: bc4e2c821e9b5c04997bf54e3d40930b, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 86e08533ba5f0a54f832acfa3f524d61, type: 2}
+    - {fileID: 11400000, guid: b72146a9eb8291040aa942c58b08695d, type: 2}

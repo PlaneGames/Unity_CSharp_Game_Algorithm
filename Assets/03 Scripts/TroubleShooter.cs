@@ -19,7 +19,7 @@ public struct TroubleShooter
     {
         success = false;
         error = _error;
-        PopupMgr.GetPopup<PopupException>();
+        UI_PopupMgr.GetPopup<UIP_Exception>();
     }
 }
 

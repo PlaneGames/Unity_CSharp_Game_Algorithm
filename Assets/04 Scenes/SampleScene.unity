@@ -737,9 +737,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1459190877}
-  - component: {fileID: 1459190880}
+  - component: {fileID: 1459190881}
   - component: {fileID: 1459190878}
-  - component: {fileID: 1459190879}
   m_Layer: 0
   m_Name: UIMgr
   m_TagString: Untagged
@@ -770,10 +769,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1459190876}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1182791a9bb2b64a9c9fe1fdc9ac2e6, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d08613bf417fa7418e6d21663665cb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1459190879
+--- !u!114 &1459190881
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -782,18 +781,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1459190876}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 035fa9e12687576478a2d152798ecb97, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1459190880
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1459190876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89612ea43448a5d4ebf4a7179ec85321, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b14933a02fd92d428871a590b31db87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

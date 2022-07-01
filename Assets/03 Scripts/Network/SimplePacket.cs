@@ -99,14 +99,28 @@ public class Packet
 
     public static void Send(Packet _packet, Socket _socket)
     {
-        byte[] _res = Packet.PacketToByte(_packet);
-        _socket.Send(_res, 0, _res.Length, SocketFlags.None);
+        if (_socket != null)
+        {
+            byte[] _res = Packet.PacketToByte(_packet);
+            _socket.Send(_res, 0, _res.Length, SocketFlags.None);
+        }
+        else
+        {
+            Debug.LogError("Socket 접속 오류");
+        }
     }
-
+    
     public static void Send(PacketType _packet, Socket _socket)
     {
-        byte[] _res = Packet.PacketTypeToByte(_packet);
-        _socket.Send(_res, 0, _res.Length, SocketFlags.None);
+        if (_socket != null)
+        {
+            byte[] _res = Packet.PacketTypeToByte(_packet);
+            _socket.Send(_res, 0, _res.Length, SocketFlags.None);
+        }
+        else
+        {
+            Debug.LogError("Socket 접속 오류");
+        }
     }
 
 }
