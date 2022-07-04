@@ -35,9 +35,6 @@ public class Protocol
         data.AddRange(_bytes_msg_idx);
         data.Add(_type);
 
-        //Add(_msg_idx);
-        //Add(_type);
-
         // HeaderArch : [ TotalLen(2B) | MessageIndex(2B) | RequestType(1B) ]
         // DataArch : [ KeyLen(1B) | KeyString(KeyLen) | DataLen(2B) | Data(DataLen) ]
     }
@@ -130,7 +127,6 @@ public class Protocol
     public void SendData()
     {
         byte[] _bytes = DataToArray();
-        ResponseData(_bytes);
 
         if (Client.Instance.clientSocket != null)
         {
@@ -145,26 +141,42 @@ public class Protocol
         }
     }
 
+    public static Protocol CHAT_ROOM_OPEN          = new Protocol(0, REQUEST);
+
+}
+
+
+public class Receiver
+{
+    static Dictionary<string, byte[]> responsed;
+
+
+    protected Receiver()
+    {
+        responsed = new Dictionary<string, byte[]>();
+    }
+
+
     void ResponseData(byte[] _bytes)
     {
         ushort _pak_type = (ushort)BitConverter.ToInt16(_bytes, 0);
         byte _req_type = _bytes[2];
-        Debug.Log(_pak_type + " : " + _req_type);
 
-        string _key = Encoding.UTF8.GetString(_bytes, 4, _bytes[3]);
-        ushort _data_len = (ushort)BitConverter.ToInt16(_bytes, 4 + _bytes[3]);
-        byte[] _data = new byte[_data_len];
-        Array.Copy(_bytes, (int)(4 + _bytes[3] + _data_len), _data, 0, (int)_data_len);
-        //_key = ;
+        int _cur_idx = 3;
 
-        Debug.Log(_bytes[3] + " : " + _key + " : " + _data_len);
-        for (int i = 0; i < _data.Length; i ++)
+        // [ KeyLen(1B) | KeyString(KeyLen) | DataLen(2B) | Data(DataLen) ]
+        while (_cur_idx < _bytes.Length)
         {
-            Debug.Log(_data[i]);
+            byte _key_len = _bytes[_cur_idx];
+            string _key = Encoding.UTF8.GetString(_bytes, _cur_idx + 1, _key_len);
+
+            ushort _data_len = (ushort)BitConverter.ToInt16(_bytes, _cur_idx + _key_len + 1);
+            byte[] _data = new byte[_data_len];
+            Array.Copy(_bytes, _cur_idx + _key_len + 3, _data, 0, _data_len);
+ 
+            responsed.Add(_key, _data);
+            _cur_idx = _cur_idx + _key_len + 3 + _data_len;
         }
-
     }
-
-    public static Protocol CHAT_ROOM_OPEN          = new Protocol(0, RESPONSE);
 
 }
