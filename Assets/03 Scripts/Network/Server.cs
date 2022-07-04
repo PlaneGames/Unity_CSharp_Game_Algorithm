@@ -30,6 +30,8 @@ public class Server : SingleTonMonobehaviour<Server>
         this.serverSocket.Listen(10);
 
         ChatRoom.Init();
+        Protocol.CHAT_ROOM_OPEN.Add("글자키", "가");
+        Protocol.CHAT_ROOM_OPEN.SendData();
     }
 
     void SocketClose()
